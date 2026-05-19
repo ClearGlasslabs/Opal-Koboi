@@ -8,7 +8,7 @@ This blueprint defines a production-grade, secure, coalition-aware intelligence 
 
 ---
 
-## 1) System Architecture
+## System Architecture
 
 ### 1.1 End-to-End Reference Architecture
 
@@ -75,7 +75,7 @@ flowchart LR
 
 ---
 
-## 2) Data and Ontology
+### 1) Learning signal capture
 
 ### 2.1 Ontology Object Model (Foundry Object Types)
 
@@ -156,7 +156,7 @@ This supports:
 
 ---
 
-## 3) AI and Agent Design
+### 3) Event + storage + retrieval
 
 ### 3.1 Copilot Roles
 
@@ -212,7 +212,7 @@ Allowed tools (scoped + policy-mediated):
 - policy violation counters and block reasons
 - trust metrics (acceptance, override, rework)
 
-### 4.2 Improvement Pipeline
+### 1) FastAPI gateway with policy check
 
 ```text
 Runtime Logs
@@ -261,7 +261,12 @@ Rollback triggers:
 
 ---
 
-## 5) Full-Stack Implementation Blueprint
+async def opa_allow(subject: dict, action: str, resource: dict) -> bool:
+    payload = {"input": {"subject": subject, "action": action, "resource": resource}}
+    async with httpx.AsyncClient(timeout=2.0) as client:
+        r = await client.post("http://opa:8181/v1/data/artemis/allow", json=payload)
+        r.raise_for_status()
+        return bool(r.json().get("result", False))
 
 ### 5.1 Web UI (TypeScript/React)
 
@@ -333,7 +338,29 @@ Policy-aware routing examples:
 
 ---
 
-## 6) Security and Governance
+### 3) Ontology-aware query function
+
+```python
+from sqlalchemy import text
+
+def fetch_case_graph(conn, case_id: str, max_depth: int = 2):
+    sql = text("""
+    WITH RECURSIVE g AS (
+      SELECT e.entity_id, e.entity_type, e.canonical_name, 0 AS depth
+      FROM ontology_entity e
+      JOIN case_entity ce ON ce.entity_id = e.entity_id
+      WHERE ce.case_id = :case_id
+      UNION ALL
+      SELECT e2.entity_id, e2.entity_type, e2.canonical_name, g.depth + 1
+      FROM g
+      JOIN ontology_relationship r ON r.src_entity_id = g.entity_id
+      JOIN ontology_entity e2 ON e2.entity_id = r.dst_entity_id
+      WHERE g.depth < :max_depth
+    )
+    SELECT * FROM g;
+    """)
+    return conn.execute(sql, {"case_id": case_id, "max_depth": max_depth}).mappings().all()
+```
 
 - **Zero Trust**: all calls authenticated/authorized; no network-location trust.
 - **Need-to-know default deny**.
