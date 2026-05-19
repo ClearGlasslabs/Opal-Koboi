@@ -2,7 +2,11 @@
 
 ## System Architecture
 
-### 1) End-to-End Stack (Palantir-Aligned)
+---
+
+## System Architecture
+
+### 1.1 End-to-End Reference Architecture
 
 ```text
 [External Feeds: ISR, cyber telemetry, HUMINT reports, partner APIs, archival batches]
@@ -29,10 +33,7 @@
 
 ### 3) Control-Plane Interfaces
 
-- **Foundry**: data contracts, pipeline lineage, ontology object model, RBAC/ABAC propagation.
-- **Gotham**: case synchronization, entity watchlists, operational timeline rendering.
-- **AIP**: copilot runtime, tool permissions, eval harness, prompt registry, agent DAGs.
-- **Apollo**: signed artifact rollout, runtime feature-flag governance, enclave-specific releases.
+### 1) Learning signal capture
 
 ---
 
@@ -76,7 +77,14 @@ All edges carry `confidence`, `evidence_refs`, `lineage_id`, `valid_time`, `clas
 
 ---
 
-## AI and Agent Design
+### 3) Event + storage + retrieval
+
+### 3.1 Copilot Roles
+
+1. **Analyst Copilot**
+   - Entity history synthesis
+   - Hypothesis generation with confidence intervals
+   - Source-grounded evidence trails
 
 ### 1) Copilots
 
@@ -122,7 +130,7 @@ Agents cannot execute operationally significant actions without explicit human a
 - latency/cost/tool-failure telemetry,
 - policy denials and override requests.
 
-### 2) Improvement Pipeline
+### 1) FastAPI gateway with policy check
 
 ```text
 Runtime Signals -> Feature Store -> Eval Dataset Builder -> Offline Evals
@@ -148,9 +156,120 @@ The platform may **propose** updates (prompt template changes, routing adjustmen
 
 ---
 
-## Full-Stack Implementation Blueprint
+async def opa_allow(subject: dict, action: str, resource: dict) -> bool:
+    payload = {"input": {"subject": subject, "action": action, "resource": resource}}
+    async with httpx.AsyncClient(timeout=2.0) as client:
+        r = await client.post("http://opa:8181/v1/data/artemis/allow", json=payload)
+        r.raise_for_status()
+        return bool(r.json().get("result", False))
 
-### 1) Backend Python Services
+### 5.1 Web UI (TypeScript/React)
+
+Screens:
+- Mission dashboard
+- Alert stream + triage queue
+- Graph explorer + temporal timeline
+- Copilot panel with “Why this?” provenance tab
+- Recommendation approval/reject/revise workflow
+
+Client architecture:
+- `app-shell`
+- `mission-state` (Redux Toolkit / Zustand)
+- `live-stream` (SSE/WebSocket)
+- `auth-context` (OIDC + mission claims)
+- `policy-aware components` (hide/redact by ABAC decision)
+
+### 5.2 API Gateway + Mission Services (Python/FastAPI)
+
+Core APIs:
+- `POST /api/alerts/ingest`
+- `GET /api/entities/{id}`
+- `POST /api/copilot/query`
+- `POST /api/actions/propose`
+- `POST /api/actions/{id}/approve`
+- `POST /api/actions/{id}/reject`
+- `POST /api/evals/run`
+
+Request context includes signed claims:
+- `mission_ids`
+- `clearance`
+- `coalition`
+- `roles`
+- `compartments`
+
+### 5.3 Event Backbone
+
+Kafka topics:
+- `intel.raw.events`
+- `intel.normalized.events`
+- `intel.enriched.events`
+- `agent.recommendations`
+- `operator.feedback`
+- `eval.outcomes`
+- `policy.decisions`
+
+### 5.4 Retrieval + Search
+
+Hybrid retrieval stack:
+1. structured ontology query (high precision)
+2. vector retrieval over reports/chunks
+3. graph neighborhood expansion
+4. rerank by confidence + recency + mission relevance
+
+### 5.5 Model Router
+
+Policy-aware routing examples:
+- low-latency model for triage
+- high-reasoning model for mission synthesis
+- deterministic constrained output model for regulated artifacts
+
+### 5.6 Observability + Evals
+
+- OpenTelemetry traces with request/mission IDs
+- model/tool call spans
+- audit log append-only stream
+- eval dashboards per mission/team/model route
+- drift monitoring (input distribution + performance drift)
+
+---
+
+### 3) Ontology-aware query function
+
+```python
+from sqlalchemy import text
+
+def fetch_case_graph(conn, case_id: str, max_depth: int = 2):
+    sql = text("""
+    WITH RECURSIVE g AS (
+      SELECT e.entity_id, e.entity_type, e.canonical_name, 0 AS depth
+      FROM ontology_entity e
+      JOIN case_entity ce ON ce.entity_id = e.entity_id
+      WHERE ce.case_id = :case_id
+      UNION ALL
+      SELECT e2.entity_id, e2.entity_type, e2.canonical_name, g.depth + 1
+      FROM g
+      JOIN ontology_relationship r ON r.src_entity_id = g.entity_id
+      JOIN ontology_entity e2 ON e2.entity_id = r.dst_entity_id
+      WHERE g.depth < :max_depth
+    )
+    SELECT * FROM g;
+    """)
+    return conn.execute(sql, {"case_id": case_id, "max_depth": max_depth}).mappings().all()
+```
+
+- **Zero Trust**: all calls authenticated/authorized; no network-location trust.
+- **Need-to-know default deny**.
+- **Compartment + coalition enforcement** at row/column/edge/action levels.
+- **Policy-as-code** in gateway and tool runtime.
+- **Prompt governance**: versioned prompts, test reports, approval signatures.
+- **Model governance**: approved registry, intended-use constraints, fallback paths.
+- **Immutable provenance**: append-only logs for data access, outputs, approvals, upgrades.
+
+---
+
+## 7) Code Examples (Python-First, Production-Oriented)
+
+### 7.1 FastAPI Gateway + Policy Context
 
 ```python
 # artemis/backend/recommendation_service.py
