@@ -1,65 +1,94 @@
 #!/usr/bin/env python3
 """ClearGlassInc Artemis API bridge.
 
-Provides frontend-consumable endpoints that connect static HTML clients
-with the Python analytics stack.
+Exposes intelligence outputs to frontend clients and orchestrators.
 """
 
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+import sqlite3
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from flask import Flask, jsonify
 
-import ml_engine
-import market_analyzer
-
-CONFIG_PATH = Path(__file__).with_name("clearglassinc.json")
-DEFAULT_DB_PATH = Path("../database/clearglassinc_aerospace.db")
+CONFIG_PATH = Path("clearglassinc.json")
 
 
-def _load_config() -> Dict[str, Any]:
-    if CONFIG_PATH.exists():
-        with CONFIG_PATH.open("r", encoding="utf-8") as f:
-            return json.load(f)
-    return {"database": {"path": str(DEFAULT_DB_PATH)}}
+def load_config() -> Dict[str, Any]:
+    with CONFIG_PATH.open("r", encoding="utf-8") as f:
+        return json.load(f)
 
 
-CONFIG = _load_config()
-DB_PATH = Path(CONFIG.get("database", {}).get("path", DEFAULT_DB_PATH))
+CONFIG = load_config()
+DB_PATH = Path(CONFIG["data_sources"]["databases"]["sqlite"]["path"])
 
-app = Flask(__name__)
+app = Flask("clearglassinc_artemis_api")
 
 
-@app.get("/api/status")
+def get_db_connection() -> sqlite3.Connection:
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+@app.route("/api/health")
+def health() -> Any:
+    return jsonify(
+        {
+            "status": "ok",
+            "system": "ClearGlassInc Artemis",
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+        }
+    )
+
+
+@app.route("/api/status")
 def status() -> Any:
-    """System status and latest intelligence metadata."""
-    return jsonify(
-        {
-            "organization": "ClearGlassInc Artemis",
-            "timestamp_utc": datetime.now(timezone.utc).isoformat(),
-            "db_path": str(DB_PATH),
-            "ml_engine_version": getattr(ml_engine, "CONFIG", {}).get("version", "unknown"),
-            "market_analyzer_version": getattr(market_analyzer, "__version__", "unknown"),
-            "service": "online",
-        }
-    )
+    """Return latest predictions for frontend dashboards."""
+    with get_db_connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT prediction_date, target_date, sector, predicted_index,
+                   confidence_score, scenario
+            FROM predictions
+            ORDER BY prediction_date DESC
+            LIMIT 25
+            """
+        ).fetchall()
+
+    payload: List[Dict[str, Any]] = [dict(r) for r in rows]
+    return jsonify({"count": len(payload), "predictions": payload})
 
 
-@app.get("/api/market")
+@app.route("/api/market")
 def market() -> Any:
-    """Return a minimal market snapshot for UI and health checks."""
-    return jsonify(
-        {
-            "organization": "ClearGlassInc Artemis",
-            "generated_at": datetime.now(timezone.utc).isoformat(),
-            "summary": "Market analysis endpoint is active and ready for report payloads.",
-        }
-    )
+    """Return recent market analysis output."""
+    with get_db_connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT analysis_date, sector, market_sentiment,
+                   growth_score, risk_level, analysis_json
+            FROM analysis_results
+            ORDER BY analysis_date DESC
+            LIMIT 25
+            """
+        ).fetchall()
+
+    payload: List[Dict[str, Any]] = []
+    for row in rows:
+        record = dict(row)
+        if record.get("analysis_json"):
+            try:
+                record["analysis_json"] = json.loads(record["analysis_json"])
+            except json.JSONDecodeError:
+                pass
+        payload.append(record)
+
+    return jsonify({"count": len(payload), "market": payload})
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=5000)
