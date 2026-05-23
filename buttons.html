@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Opal Command Button System</title>
+  <link rel="stylesheet" href="assets/css/opal-command-buttons.css">
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(77,232,255,0.12), transparent 28rem),
+        radial-gradient(circle at 80% 16%, rgba(155,108,255,0.14), transparent 26rem),
+        linear-gradient(180deg, #050910 0%, #08111d 52%, #03060b 100%);
+      color: #eef8ff;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      width: min(1080px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 5rem 0;
+    }
+    .panel {
+      border: 1px solid rgba(125,222,255,0.2);
+      border-radius: 1.2rem;
+      padding: clamp(1.25rem, 3vw, 2rem);
+      background: linear-gradient(180deg, rgba(9,18,31,0.72), rgba(4,9,17,0.82));
+      box-shadow: 0 24px 80px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.07);
+      backdrop-filter: blur(16px);
+    }
+    .eyebrow {
+      margin: 0 0 0.7rem;
+      color: #4de8ff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4.4rem);
+      line-height: 0.94;
+      letter-spacing: -0.06em;
+    }
+    .lede {
+      max-width: 720px;
+      margin: 1.1rem 0 2.2rem;
+      color: #9fb4c7;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+    .grid {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .group {
+      padding: 1rem;
+      border: 1px solid rgba(255,255,255,0.075);
+      border-radius: 1rem;
+      background: rgba(255,255,255,0.025);
+    }
+    .group h2 {
+      margin: 0 0 1rem;
+      color: #cfeaff;
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="panel" aria-labelledby="title">
+      <p class="eyebrow">Opal Interface System / Command Controls</p>
+      <h1 id="title">Precision-engineered controls for cyber-intelligence operations.</h1>
+      <p class="lede">Dark glass surfaces, luminous constrained energy, accessible focus states, deliberate depth, and reduced-motion support. These are system controls, not marketing calls-to-action.</p>
+
+      <div class="grid">
+        <div class="group">
+          <h2>Variants</h2>
+          <div class="opal-control-row">
+            <button class="opal-btn opal-btn--primary" type="button"><span class="opal-btn__signal"></span>Primary</button>
+            <button class="opal-btn opal-btn--secondary" type="button"><span class="opal-btn__signal"></span>Secondary</button>
+            <button class="opal-btn opal-btn--ghost" type="button"><span class="opal-btn__signal"></span>Ghost</button>
+            <button class="opal-btn opal-btn--danger" type="button"><span class="opal-btn__signal"></span>Danger</button>
+            <button class="opal-btn opal-btn--command" type="button"><span class="opal-btn__signal"></span>Command</button>
+            <button class="opal-btn opal-btn--success" type="button"><span class="opal-btn__signal"></span>Success</button>
+          </div>
+        </div>
+
+        <div class="group">
+          <h2>Operational States</h2>
+          <div class="opal-control-row">
+            <button class="opal-btn opal-btn--command opal-btn--loading" type="button" aria-busy="true"><span class="opal-btn__signal"></span>Scanning</button>
+            <button class="opal-btn opal-btn--primary" type="button" disabled><span class="opal-btn__signal"></span>Disabled</button>
+            <button class="opal-btn opal-btn--success" type="button"><span class="opal-btn__signal"></span>Authorized</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="assets/js/opal-buttons.js" defer></script>
+</body>
+</html>
