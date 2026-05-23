@@ -21,6 +21,8 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
 .bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(0,229,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px}
 #starfield{position:fixed;inset:0;z-index:0;pointer-events:none}
 .nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(1.5rem,4vw,3rem);background:rgba(3,7,18,.7);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.nav-brand{display:flex;align-items:center;min-width:0;text-decoration:none}
+.nav-logo{display:block;width:clamp(150px,18vw,220px);height:auto;max-height:52px;object-fit:contain;filter:drop-shadow(0 0 14px rgba(0,229,255,.16))}
 .nav-brand-text{font-family:var(--font-display);font-weight:800;font-size:clamp(.9rem,1.4vw,1.15rem);letter-spacing:.06em;color:var(--gold)}
 .nav-brand-sub{font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;color:var(--muted)}
 .nav-links{display:flex;gap:clamp(1rem,2.5vw,2rem)}
@@ -58,7 +60,7 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
 .comp-badge{display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:10px;border:1px solid var(--border);background:var(--panel)}
 .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem}
 .footer{border-top:1px solid var(--border);padding:2rem clamp(1.5rem,5vw,4rem);text-align:center;color:var(--dim);font-family:var(--font-mono);font-size:.7rem}
-@media(max-width:700px){.nav-links{display:none}.nav-mobile{display:flex}.contact-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.nav-links{display:none}.nav-mobile{display:flex}.contact-grid{grid-template-columns:1fr}.nav-logo{width:140px;max-height:44px}}
 </style>
 </head>
 <body>
@@ -66,7 +68,7 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
 <canvas id="starfield"></canvas>
 
 <nav class="nav">
-  <div><span class="nav-brand-text">CLEARGLASSINC</span><br><span class="nav-brand-sub">CYBERSECURITY INTELLIGENCE</span></div>
+  <a class="nav-brand" href="./" aria-label="ClearGlass Inc. home"><img class="nav-logo" src="ClearGlass%20Logo.png" alt="ClearGlass Inc." width="220" height="52"/></a>
   <div class="nav-links">
     <a href="#about">About</a><a href="#services">Services</a><a href="#platforms">Platforms</a><a href="#contact">Contact</a>
     <a href="#contact" class="nav-cta">CONTACT</a>
