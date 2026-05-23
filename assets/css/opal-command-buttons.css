@@ -1,0 +1,273 @@
+:root {
+  --opal-surface: rgba(7, 14, 24, 0.74);
+  --opal-surface-strong: rgba(10, 20, 34, 0.9);
+  --opal-text: #eef8ff;
+  --opal-muted: #8ea5ba;
+  --opal-cyan: #4de8ff;
+  --opal-blue: #2688ff;
+  --opal-violet: #9b6cff;
+  --opal-green: #42f5a7;
+  --opal-red: #ff4d6d;
+  --opal-border: rgba(125, 222, 255, 0.38);
+  --opal-shadow: 0 18px 44px rgba(0, 0, 0, 0.38);
+  --opal-glow-cyan: 0 0 26px rgba(77, 232, 255, 0.28);
+  --opal-glow-blue: 0 0 32px rgba(38, 136, 255, 0.24);
+  --opal-radius: 0.72rem;
+  --opal-speed: 180ms;
+  --opal-sweep-speed: 820ms;
+}
+
+.opal-control-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  align-items: center;
+}
+
+.opal-btn {
+  --btn-a: var(--opal-cyan);
+  --btn-b: var(--opal-blue);
+  --btn-c: var(--opal-violet);
+  --btn-bg: linear-gradient(180deg, rgba(15, 28, 46, 0.88), rgba(4, 10, 19, 0.9));
+  --btn-border: rgba(99, 218, 255, 0.42);
+  --btn-glow: rgba(77, 232, 255, 0.26);
+
+  position: relative;
+  isolation: isolate;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  gap: 0.58rem;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.95rem;
+  min-width: 9.75rem;
+  padding: 0.82rem 1.15rem;
+  border: 1px solid transparent;
+  border-radius: var(--opal-radius);
+  background:
+    linear-gradient(var(--btn-bg), var(--btn-bg)) padding-box,
+    linear-gradient(115deg, rgba(255,255,255,0.16), var(--btn-a), var(--btn-b), var(--btn-c), rgba(255,255,255,0.12)) border-box;
+  color: var(--opal-text);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.11),
+    inset 0 -14px 28px rgba(0,0,0,0.25),
+    var(--opal-shadow),
+    0 0 0 rgba(0,0,0,0),
+    0 0 26px var(--btn-glow);
+  font: 700 0.77rem/1.1 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform var(--opal-speed) ease,
+    box-shadow var(--opal-speed) ease,
+    filter var(--opal-speed) ease,
+    border-color var(--opal-speed) ease;
+  overflow: hidden;
+}
+
+.opal-btn::before,
+.opal-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.opal-btn::before {
+  z-index: -1;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255,255,255,0.16), transparent 34%),
+    linear-gradient(100deg, transparent 0%, rgba(255,255,255,0.02) 38%, rgba(255,255,255,0.26) 49%, rgba(77,232,255,0.28) 52%, transparent 64%);
+  background-size: 100% 100%, 240% 100%;
+  background-position: 0 0, 120% 0;
+  opacity: 0.72;
+}
+
+.opal-btn::after {
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.055),
+    inset 0 0 24px rgba(77,232,255,0.06);
+}
+
+.opal-btn:hover:not(:disabled):not([aria-disabled="true"]) {
+  transform: translate3d(0, -3px, 0) scale(1.012);
+  filter: saturate(1.12) brightness(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.16),
+    inset 0 -16px 28px rgba(0,0,0,0.21),
+    0 22px 52px rgba(0,0,0,0.42),
+    0 0 0 1px rgba(255,255,255,0.045),
+    0 0 34px var(--btn-glow);
+}
+
+.opal-btn:hover:not(:disabled):not([aria-disabled="true"])::before {
+  animation: opal-energy-sweep var(--opal-sweep-speed) cubic-bezier(.19,1,.22,1) forwards;
+}
+
+.opal-btn:active:not(:disabled):not([aria-disabled="true"]),
+.opal-btn.is-pressed {
+  transform: translate3d(0, 1px, 0) scale(0.982);
+  box-shadow:
+    inset 0 2px 18px rgba(0,0,0,0.48),
+    inset 0 0 18px rgba(77,232,255,0.08),
+    0 9px 24px rgba(0,0,0,0.38),
+    0 0 18px var(--btn-glow);
+}
+
+.opal-btn:focus-visible {
+  outline: 0;
+  box-shadow:
+    0 0 0 3px rgba(2, 8, 16, 0.92),
+    0 0 0 5px var(--btn-a),
+    0 0 0 8px rgba(77,232,255,0.18),
+    0 18px 44px rgba(0,0,0,0.42),
+    0 0 34px var(--btn-glow);
+}
+
+.opal-btn:disabled,
+.opal-btn[aria-disabled="true"] {
+  cursor: not-allowed;
+  color: rgba(238,248,255,0.45);
+  background:
+    linear-gradient(rgba(12,18,27,0.72), rgba(5,8,13,0.76)) padding-box,
+    linear-gradient(115deg, rgba(255,255,255,0.06), rgba(110,137,158,0.22), rgba(255,255,255,0.04)) border-box;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    inset 0 -12px 22px rgba(0,0,0,0.28),
+    0 10px 28px rgba(0,0,0,0.22);
+  opacity: 0.66;
+  filter: saturate(0.42);
+}
+
+.opal-btn__icon {
+  width: 1.03em;
+  height: 1.03em;
+  display: inline-block;
+  color: var(--btn-a);
+  filter: drop-shadow(0 0 8px var(--btn-glow));
+}
+
+.opal-btn__signal {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--btn-a);
+  box-shadow: 0 0 12px var(--btn-a);
+}
+
+.opal-btn--primary {
+  --btn-a: var(--opal-cyan);
+  --btn-b: var(--opal-blue);
+  --btn-c: var(--opal-violet);
+  --btn-glow: rgba(77, 232, 255, 0.28);
+}
+
+.opal-btn--secondary {
+  --btn-a: #9fc9ff;
+  --btn-b: var(--opal-blue);
+  --btn-c: #6b7dff;
+  --btn-bg: linear-gradient(180deg, rgba(13, 21, 35, 0.78), rgba(5, 10, 18, 0.88));
+  --btn-glow: rgba(38, 136, 255, 0.21);
+}
+
+.opal-btn--ghost {
+  --btn-a: rgba(77,232,255,0.78);
+  --btn-b: rgba(155,108,255,0.54);
+  --btn-c: rgba(255,255,255,0.16);
+  --btn-bg: linear-gradient(180deg, rgba(10, 20, 33, 0.34), rgba(4, 9, 17, 0.48));
+  --btn-glow: rgba(77, 232, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 30px rgba(0,0,0,0.24);
+}
+
+.opal-btn--danger {
+  --btn-a: #ff6f8a;
+  --btn-b: var(--opal-red);
+  --btn-c: var(--opal-violet);
+  --btn-glow: rgba(255, 77, 109, 0.24);
+}
+
+.opal-btn--command {
+  --btn-a: var(--opal-violet);
+  --btn-b: var(--opal-cyan);
+  --btn-c: #ffffff;
+  --btn-bg: linear-gradient(180deg, rgba(22, 18, 48, 0.88), rgba(6, 12, 24, 0.94));
+  --btn-glow: rgba(155, 108, 255, 0.3);
+  min-width: 11.4rem;
+}
+
+.opal-btn--success {
+  --btn-a: var(--opal-green);
+  --btn-b: var(--opal-cyan);
+  --btn-c: var(--opal-blue);
+  --btn-glow: rgba(66, 245, 167, 0.22);
+}
+
+.opal-btn--loading {
+  cursor: wait;
+}
+
+.opal-btn--loading .opal-btn__signal {
+  animation: opal-signal 960ms ease-in-out infinite;
+}
+
+.opal-btn--loading::after {
+  background: repeating-linear-gradient(90deg, transparent 0 11px, rgba(77,232,255,0.08) 12px 13px);
+  mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+  animation: opal-scan 1.15s linear infinite;
+}
+
+.opal-ripple {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255,255,255,0.42), rgba(77,232,255,0.22) 45%, transparent 72%);
+  transform: translate(-50%, -50%) scale(0);
+  animation: opal-impact 520ms ease-out forwards;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes opal-energy-sweep {
+  from { background-position: 0 0, 120% 0; }
+  to { background-position: 0 0, -120% 0; }
+}
+
+@keyframes opal-impact {
+  to { transform: translate(-50%, -50%) scale(18); opacity: 0; }
+}
+
+@keyframes opal-signal {
+  0%, 100% { opacity: 0.45; transform: scale(0.82); }
+  50% { opacity: 1; transform: scale(1.22); }
+}
+
+@keyframes opal-scan {
+  from { transform: translateX(-18%); }
+  to { transform: translateX(18%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opal-btn,
+  .opal-btn::before,
+  .opal-btn::after,
+  .opal-ripple,
+  .opal-btn--loading .opal-btn__signal,
+  .opal-btn--loading::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .opal-btn:hover:not(:disabled):not([aria-disabled="true"]),
+  .opal-btn:active:not(:disabled):not([aria-disabled="true"]) {
+    transform: none;
+  }
+}
