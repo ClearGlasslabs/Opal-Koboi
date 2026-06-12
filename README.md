@@ -20,7 +20,7 @@
 
 ## 🚀 Overview
 
-**Clearglassinc Aerospace Intelligence System** is the industry's most comprehensive market research and predictive analytics platform for aerospace and defense companies. Built for investors, analysts, and strategic decision-makers who demand enterprise-grade intelligence.
+**Clearglassinc Intelligence System** is the industry's most comprehensive market research and predictive analytics platform for aerospace and defense companies. Built for investors, analysts, and strategic decision-makers who demand enterprise-grade intelligence.
 
 ### Why Clearglassinc?
 
@@ -418,33 +418,13 @@ See [LICENSE.txt](LICENSE.txt) for full terms.
 
 ---
 
-## 📞 Contact
-
 **Clearglassinc**
 
-🏢 **Headquarters**  
-123 Innovation Drive  
-Tech City, TC 12345  
-United States
-
-📧 **Email**  
-- Sales: sales@clearglassinc.com
-- Support: support@clearglassinc.com
-- General: info@clearglassinc.com
-
-🌐 **Web**  
-- Website: https://www.clearglassinc.com
-- Documentation: https://docs.clearglassinc.com
-- Status: https://status.clearglassinc.com
-
----
 
 <div align="center">
 
 **Made with ❤️ by Clearglassinc**
 
 Copyright © 2025-2030 Clearglassinc. All rights reserved.
-
-[Website](https://clearglassinc.com) • [Documentation](https://docs.clearglassinc.com) • [Support](https://support.clearglassinc.com)
 
 </div>
