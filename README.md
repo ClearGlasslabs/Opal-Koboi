@@ -1,5 +1,5 @@
 # CLEARGLASSINC
-## Aerospace Intelligence System v2.0
+## Intelligence System 
 
 <div align="center">
 
