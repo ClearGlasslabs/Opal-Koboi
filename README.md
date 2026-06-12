@@ -1,7 +1,5 @@
 # 🔮 ClearGlass Inc. - Municipal Cybersecurity Intelligence
 
-**Burlington, Ontario, Canada**
-
 Enterprise-grade OSINT intelligence platforms, real-time threat dashboards, and compliance automation — purpose-built for Canadian municipalities.
 
 ## 🚀 Platforms
