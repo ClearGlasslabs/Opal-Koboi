@@ -21,10 +21,5 @@ Enterprise-grade OSINT intelligence platforms, real-time threat dashboards, and 
 
 [https://clearglasslabs.github.io/Opal-Koboi/](https://clearglasslabs.github.io/Opal-Koboi/)
 
-## 📧 Contact
-
-- Email: info@clearglassinc.com
-- Location: Burlington, ON (43.3255°N, 79.7990°W)
-
 ---
 © 2026 ClearGlass Inc.
