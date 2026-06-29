@@ -314,3 +314,213 @@ The Triage Agent receives a least-privilege task envelope. It queries only missi
 The Recommendation Agent drafts an action package: notify the assigned municipal security contact, rotate a specific integration credential, block the indicator at the gateway, and open a follow-up case. Because this is operationally significant, Artemis marks the package `AWAITING_APPROVAL`. The analyst edits one sentence, lowers confidence on one relationship, approves the credential rotation recommendation, and rejects the external notification until a second source confirms the event.
 
 The feedback system records the edit, rejection reason, confidence correction, and final outcome. Overnight, the Improvement Agent discovers that similar alerts were overconfident when only one source was available. It proposes a prompt diff and workflow rule requiring explicit second-source language for that pattern. The eval suite shows lower unsupported-claim rate with no recall loss. A human eval steward approves a 5% canary. Apollo deploys the signed workflow version, monitors override rates and latency, then promotes it when metrics stay inside thresholds. If the canary regresses, Apollo rolls back to the previous workflow and preserves the failed proposal for audit.
+
+## Enumeration Operations Module
+
+ClearGlassInc Artemis can support field enumeration as a governed case-management and decision-support workflow, but it must not impersonate an enumerator, contact residents autonomously, scrape restricted government systems, or submit official census responses without an authorized human operator. The platform therefore automates prioritization, routing, evidence packaging, reminders, audit capture, and supervisor reporting while keeping every resident contact, interview, verification, and final case disposition under trained-human control.
+
+### Human-controlled operating model
+
+| Capability | Automated by Artemis | Human approval / execution |
+|---|---|---|
+| Case import | Parse assigned workload tables, validate fields, detect duplicates, classify status codes | Confirm import source and assignment authority |
+| Prioritization | Rank by status, SSID sequence, location cluster, previous attempts, accessibility constraints, and time windows | Override route and priority when local knowledge requires it |
+| Route planning | Build cluster-aware stop plans and estimated duration | Physically visit, phone, or otherwise contact respondents only through authorized channels |
+| Interview support | Display scripts, required fields, policy reminders, and case history | Conduct the interview and record answers in approved systems |
+| Completion verification | Queue 701 cases, show verification checklist, compare operator-entered metadata | Confirm completion status in the official system |
+| Reporting | Generate daily progress, exceptions, unresolved cases, and audit summaries | Submit official reports through authorized channels |
+
+### Enumeration case object
+
+```yaml
+EnumerationCase:
+  case_number: string
+  ssid: string
+  normalized_ssid: integer
+  survey: enum[CENSUS]
+  activity: enum[I_E]
+  address_label: string
+  status_code: enum[429, 701]
+  status_text: string
+  cluster_key: string
+  dwelling_type: enum[apartment, basement, residential_unit, unknown]
+  priority_score: float
+  assigned_operator_id: string
+  contact_policy_id: string
+  official_system_ref: string?
+  audit:
+    imported_at: timestamp
+    imported_by: string
+    source_hash: string
+    route_version: string
+```
+
+### Deterministic prioritization
+
+```python
+from dataclasses import dataclass
+from enum import StrEnum
+from typing import Iterable
+
+class CaseStatus(StrEnum):
+    FOLLOW_UP = "429"
+    CLAIMS_COMPLETED = "701"
+
+@dataclass(frozen=True)
+class EnumerationCase:
+    case_number: str
+    ssid: str
+    location: str
+    status: CaseStatus
+    survey: str = "CENSUS"
+    activity: str = "I/E"
+
+CLUSTER_ORDER = {
+    "KING ST W": 0,
+    "MARGARET ST": 1,
+    "LOCKE ST S": 2,
+    "STRATHCONA AVE S": 3,
+    "MAIN ST W": 4,
+    "NEW ST": 5,
+}
+
+STATUS_WEIGHT = {CaseStatus.FOLLOW_UP: 0, CaseStatus.CLAIMS_COMPLETED: 1}
+
+def ssid_sequence(ssid: str) -> int:
+    return int(ssid.split()[-1])
+
+def cluster_key(location: str) -> str:
+    for key in CLUSTER_ORDER:
+        if key in location.upper():
+            return key
+    return "UNKNOWN"
+
+def dwelling_type(location: str) -> str:
+    normalized = location.upper()
+    if "BSMT" in normalized:
+        return "basement"
+    if "-" in normalized or normalized[:1].isalpha():
+        return "apartment"
+    return "residential_unit"
+
+def priority_tuple(case: EnumerationCase) -> tuple[int, int, int, str]:
+    return (
+        STATUS_WEIGHT[case.status],
+        CLUSTER_ORDER.get(cluster_key(case.location), 99),
+        ssid_sequence(case.ssid),
+        case.case_number,
+    )
+
+def plan_workload(cases: Iterable[EnumerationCase]) -> list[EnumerationCase]:
+    """Return a route-ready list without making contact or changing official records."""
+    return sorted(cases, key=priority_tuple)
+```
+
+### Route plan output for the provided 24-case workload
+
+| Stop | Cluster | Case | SSID | Location | Status | Operator action |
+|---:|---|---|---|---|---|---|
+| 1 | KING ST W | 86900420 | 35250617 0001 | 7-505 KING ST W | 429 | Attempt authorized follow-up |
+| 2 | KING ST W | 78180922 | 35250617 0004 | 3-481 KING ST W | 429 | Attempt authorized follow-up |
+| 3 | KING ST W | 86900790 | 35250617 0291 | 1A-595 KING ST W | 429 | Attempt authorized follow-up |
+| 4 | KING ST W | 78181104 | 35250617 0296 | 202-595 KING ST W | 429 | Attempt authorized follow-up |
+| 5 | KING ST W | 86900641 | 35250617 0301 | 302-595 KING ST W | 429 | Attempt authorized follow-up |
+| 6 | KING ST W | 86900704 | 35250617 0313 | 504-595 KING ST W | 429 | Attempt authorized follow-up |
+| 7 | MARGARET ST | 86900748 | 35250617 0070 | A-25 MARGARET ST | 429 | Attempt authorized follow-up |
+| 8 | MARGARET ST | 78181186 | 35250617 0084 | 22-36 MARGARET ST | 429 | Attempt authorized follow-up |
+| 9 | MARGARET ST | 86900635 | 35250617 0089 | 33-36 MARGARET ST | 429 | Attempt authorized follow-up |
+| 10 | MARGARET ST | 86900764 | 35250617 0098 | 2-44 MARGARET ST | 429 | Attempt authorized follow-up |
+| 11 | MARGARET ST | 78181240 | 35250617 0108 | 10-46 MARGARET ST | 429 | Attempt authorized follow-up |
+| 12 | LOCKE ST S | 86900586 | 35250617 0014 | 2-24 LOCKE ST S | 429 | Attempt authorized follow-up |
+| 13 | LOCKE ST S | 86900589 | 35250617 0015 | 3-24 LOCKE ST S | 429 | Attempt authorized follow-up |
+| 14 | LOCKE ST S | 78181032 | 35250617 0024 | 42 LOCKE ST S | 429 | Attempt authorized follow-up |
+| 15 | LOCKE ST S | 86900387 | 35250617 0030 | A-48 LOCKE ST S | 429 | Attempt authorized follow-up |
+| 16 | STRATHCONA AVE S | 78181117 | 35250617 0208 | 2 STRATHCONA AVE S | 429 | Attempt authorized follow-up |
+| 17 | STRATHCONA AVE S | 86900793 | 35250617 0215 | BSMT-10 STRATHCONA AVE S | 429 | Attempt authorized follow-up |
+| 18 | STRATHCONA AVE S | 86900714 | 35250617 0238 | 4-46 STRATHCONA AVE S | 429 | Attempt authorized follow-up |
+| 19 | STRATHCONA AVE S | 86900450 | 35250617 0241 | 2-50 STRATHCONA AVE S | 429 | Attempt authorized follow-up |
+| 20 | MAIN ST W | 86900490 | 35250617 0039 | 352 MAIN ST W | 429 | Attempt authorized follow-up |
+| 21 | MAIN ST W | 78181014 | 35250617 0040 | 354 MAIN ST W | 429 | Attempt authorized follow-up |
+| 22 | NEW ST | 86900731 | 35250617 0289 | 19 NEW ST | 429 | Attempt authorized follow-up |
+| 23 | STRATHCONA AVE S | 86900941 | 35250617 0229 | 2-38 STRATHCONA AVE S | 701 | Human verifies claimed completion |
+| 24 | NEW ST | 86900726 | 35250617 0286 | 23 NEW ST | 701 | Human verifies claimed completion |
+
+### Enumeration policy gates
+
+```rego
+package artemis.enumeration
+
+default allow := false
+
+authorized_case_read if {
+  input.user.role in {"enumerator", "field_supervisor", "auditor"}
+  input.case.assigned_operator_id == input.user.id
+  input.case.survey == "CENSUS"
+}
+
+allow if {
+  input.action == "plan_route"
+  authorized_case_read
+}
+
+allow if {
+  input.action == "record_attempt_notes"
+  input.user.role == "enumerator"
+  input.case.assigned_operator_id == input.user.id
+  input.human_performed_contact == true
+}
+
+requires_human_action if {
+  input.action in {"contact_resident", "conduct_interview", "verify_completion", "submit_official_status"}
+}
+
+deny_reason contains "AI may not autonomously contact residents or submit official census results" if {
+  input.actor == "ai_agent"
+  requires_human_action
+}
+```
+
+### Backend API skeleton
+
+```python
+from datetime import datetime, timezone
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
+
+router = APIRouter(prefix="/enumeration", tags=["enumeration"])
+
+class AttemptNote(BaseModel):
+    case_number: str
+    outcome_code: str = Field(description="Operator-selected code from the authorized case system")
+    notes: str = Field(max_length=2000)
+    human_performed_contact: bool
+
+class UserContext(BaseModel):
+    user_id: str
+    role: str
+    assigned_case_numbers: set[str]
+
+async def current_user() -> UserContext:
+    return UserContext(user_id="usr_field_001", role="enumerator", assigned_case_numbers=set())
+
+def require_case_assignment(user: UserContext, case_number: str) -> None:
+    if user.role != "field_supervisor" and case_number not in user.assigned_case_numbers:
+        raise HTTPException(status_code=403, detail="case is outside assigned workload")
+
+@router.post("/attempts")
+async def record_attempt(note: AttemptNote, user: UserContext = Depends(current_user)):
+    require_case_assignment(user, note.case_number)
+    if not note.human_performed_contact:
+        raise HTTPException(status_code=400, detail="resident contact must be human-performed")
+    event = {
+        "event_type": "enumeration.attempt_recorded",
+        "case_number": note.case_number,
+        "outcome_code": note.outcome_code,
+        "notes_hash": "sha256:redacted-at-rest",
+        "recorded_by": user.user_id,
+        "recorded_at": datetime.now(timezone.utc).isoformat(),
+    }
+    # event_bus.publish("enumeration.attempts", event)
+    # audit_log.append(event)
+    return event
+```
