@@ -17,6 +17,11 @@ Enterprise-grade OSINT intelligence platforms, real-time threat dashboards, and 
 - NIST CSF, PIPEDA, SOC 2, ISO 27001 compliance
 - Keyless deployment - operational in minutes
 
+
+## 🧠 ClearGlassInc Artemis Architecture
+
+A production-grade blueprint for a self-evolving AI intelligence platform is available in [`docs/clearglassinc-artemis-architecture.md`](docs/clearglassinc-artemis-architecture.md). It covers Gotham, Foundry, AIP, Apollo, ontology design, guarded self-improvement, policy-as-code, and Python-first implementation examples.
+
 ## 🌐 Live Site
 
 [https://clearglasslabs.github.io/Opal-Koboi/](https://clearglasslabs.github.io/Opal-Koboi/)
