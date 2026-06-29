@@ -24,6 +24,7 @@ This repository now includes a production-oriented architecture blueprint for **
 
 - Read the implementation blueprint: [`artemis-blueprint.md`](./artemis-blueprint.md)
 - Core guarantees: human-approved self-upgrades, immutable audit trails, mission-scoped authorization, citation-first AI outputs, and rollback-safe deployment.
+- New field-operations pattern: enumeration workload planning is route/support automation only; resident contact, interviews, verification, and official submissions remain human-controlled.
 
 ## 🌐 Live Site
 
