@@ -524,3 +524,338 @@ async def record_attempt(note: AttemptNote, user: UserContext = Depends(current_
     # audit_log.append(event)
     return event
 ```
+
+## Production Python Reference Skeleton
+
+The implementation below makes the Artemis control loop concrete: typed events enter a bus, policy-filtered ontology reads ground the agent, workflow state is persisted, and every self-improvement proposal is evaluated before Apollo canary promotion.
+
+### Repository layout
+
+```text
+services/
+  artemis_api/
+    app.py
+    auth.py
+    policy.py
+    ontology.py
+    agents.py
+    workflows.py
+    evals.py
+    audit.py
+  artemis_worker/
+    consumers.py
+    proposal_builder.py
+web/
+  app/mission/[missionId]/page.tsx
+  components/ApprovalQueue.tsx
+infra/
+  opa/artemis.rego
+  apollo/release.yaml
+```
+
+### Typed mission events
+
+```python
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from enum import StrEnum
+from typing import Any, Literal
+from pydantic import BaseModel, Field, ConfigDict
+
+class Classification(StrEnum):
+    UNCLASSIFIED = "UNCLASSIFIED"
+    PROTECTED = "PROTECTED"
+    SECRET_REL = "SECRET//REL-CAN-USA"
+    TOP_SECRET = "TOP_SECRET"
+
+class LineageRef(BaseModel):
+    source_system: str
+    source_uri: str
+    artifact_hash: str
+    ingested_at: datetime
+
+class IntelEvent(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    event_id: str
+    mission_id: str
+    event_type: str
+    event_time: datetime
+    observed_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    classification: Classification
+    compartments: set[str]
+    release_marks: set[str]
+    confidence: float = Field(ge=0, le=1)
+    payload: dict[str, Any]
+    lineage: list[LineageRef]
+
+class AlertCreated(BaseModel):
+    alert_id: str
+    mission_id: str
+    severity: Literal["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    reason_codes: list[str]
+    evidence_event_ids: list[str]
+    requires_human_review: bool = True
+```
+
+### Event consumer and triage handler
+
+```python
+import json
+from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
+
+async def consume_intel_events(bootstrap: str) -> None:
+    consumer = AIOKafkaConsumer(
+        "intel.normalized",
+        bootstrap_servers=bootstrap,
+        group_id="artemis-triage-v1",
+        enable_auto_commit=False,
+    )
+    producer = AIOKafkaProducer(bootstrap_servers=bootstrap)
+    await consumer.start(); await producer.start()
+    try:
+        async for msg in consumer:
+            event = IntelEvent.model_validate_json(msg.value)
+            alert = await triage_event(event)
+            await producer.send_and_wait(
+                "alerts.created",
+                AlertCreated(**alert).model_dump_json().encode(),
+                key=event.mission_id.encode(),
+            )
+            await append_audit("triage.completed", subject="agent:triage", obj=alert)
+            await consumer.commit()
+    finally:
+        await consumer.stop(); await producer.stop()
+
+async def triage_event(event: IntelEvent) -> dict[str, object]:
+    neighbors = await ontology_neighbors(
+        mission_id=event.mission_id,
+        seed_payload=event.payload,
+        min_confidence=0.72,
+    )
+    severity = "HIGH" if any(n["risk_score"] > 0.85 for n in neighbors) else "MEDIUM"
+    return {
+        "alert_id": f"alt_{event.event_id}",
+        "mission_id": event.mission_id,
+        "severity": severity,
+        "reason_codes": ["ontology_overlap", "live_source", "policy_review_required"],
+        "evidence_event_ids": [event.event_id],
+    }
+```
+
+### Policy-enforced ontology tool
+
+```python
+from dataclasses import dataclass
+from opentelemetry import trace
+
+tracer = trace.get_tracer("clearglassinc.artemis")
+
+@dataclass(frozen=True)
+class ToolContext:
+    run_id: str
+    operator_id: str
+    mission_id: str
+    purpose: str
+    release_marks: frozenset[str]
+    compartments: frozenset[str]
+
+async def ontology_query_tool(ctx: ToolContext, cypher: str, params: dict[str, object]) -> list[dict[str, object]]:
+    decision = await opa_decide(
+        "data.artemis.authz.allow",
+        {
+            "action": "ontology.query",
+            "purpose": ctx.purpose,
+            "user": {"id": ctx.operator_id, "release_marks": list(ctx.release_marks)},
+            "resource": {"mission_id": ctx.mission_id, "release_marks": list(ctx.release_marks)},
+        },
+    )
+    if not decision["allow"]:
+        await append_audit("tool.denied", subject=ctx.operator_id, obj={"run_id": ctx.run_id})
+        raise PermissionError("ontology query denied by mission policy")
+
+    with tracer.start_as_current_span("ontology.query") as span:
+        span.set_attribute("mission_id", ctx.mission_id)
+        span.set_attribute("run_id", ctx.run_id)
+        rows = await foundry_ontology_client.query(cypher, params | {"mission_id": ctx.mission_id})
+        redacted = redact_to_release_marks(rows, ctx.release_marks)
+        await append_audit("tool.allowed", subject=ctx.operator_id, obj={"run_id": ctx.run_id, "rows": len(redacted)})
+        return redacted
+```
+
+### Agent workflow graph
+
+```python
+from langgraph.graph import StateGraph, END
+from pydantic import BaseModel
+
+class AgentState(BaseModel):
+    mission_id: str
+    alert_id: str
+    evidence: list[dict] = []
+    hypotheses: list[dict] = []
+    recommendation: dict | None = None
+    approval_status: str = "not_required"
+
+async def enrich(state: AgentState) -> AgentState:
+    state.evidence = await retrieve_evidence_bundle(state.mission_id, state.alert_id)
+    return state
+
+async def correlate(state: AgentState) -> AgentState:
+    state.hypotheses = await run_correlation_model(state.evidence)
+    return state
+
+async def recommend(state: AgentState) -> AgentState:
+    state.recommendation = await draft_action_package(state.evidence, state.hypotheses)
+    state.approval_status = "awaiting_human"  # operationally significant by policy
+    return state
+
+workflow = StateGraph(AgentState)
+workflow.add_node("enrich", enrich)
+workflow.add_node("correlate", correlate)
+workflow.add_node("recommend", recommend)
+workflow.set_entry_point("enrich")
+workflow.add_edge("enrich", "correlate")
+workflow.add_edge("correlate", "recommend")
+workflow.add_edge("recommend", END)
+compiled_alert_workflow = workflow.compile()
+```
+
+### Evaluation and self-upgrade proposal pipeline
+
+```python
+from statistics import mean
+from pydantic import BaseModel
+
+class EvalCase(BaseModel):
+    case_id: str
+    input_bundle_uri: str
+    expected_labels: set[str]
+    minimum_citations: int
+
+class EvalResult(BaseModel):
+    suite: str
+    candidate_version: str
+    precision: float
+    recall: float
+    p95_latency_ms: int
+    unsupported_claim_rate: float
+    citation_coverage: float
+    passed: bool
+
+async def run_triage_eval(candidate_version: str, cases: list[EvalCase]) -> EvalResult:
+    predictions: list[set[str]] = []
+    latencies: list[int] = []
+    citation_scores: list[float] = []
+    unsupported = 0
+    for case in cases:
+        bundle = await load_eval_bundle(case.input_bundle_uri)
+        output, latency_ms = await run_candidate_triage(candidate_version, bundle)
+        predictions.append(set(output.labels))
+        latencies.append(latency_ms)
+        citation_scores.append(min(1.0, len(output.citations) / case.minimum_citations))
+        unsupported += count_unsupported_claims(output)
+
+    tp = sum(len(p & c.expected_labels) for p, c in zip(predictions, cases))
+    fp = sum(len(p - c.expected_labels) for p, c in zip(predictions, cases))
+    fn = sum(len(c.expected_labels - p) for p, c in zip(predictions, cases))
+    precision = tp / max(tp + fp, 1)
+    recall = tp / max(tp + fn, 1)
+    p95 = sorted(latencies)[int(len(latencies) * 0.95) - 1]
+    result = EvalResult(
+        suite="artemis-alert-triage-v12",
+        candidate_version=candidate_version,
+        precision=precision,
+        recall=recall,
+        p95_latency_ms=p95,
+        unsupported_claim_rate=unsupported / max(len(cases), 1),
+        citation_coverage=mean(citation_scores),
+        passed=precision >= 0.91 and recall >= 0.86 and p95 <= 1800 and mean(citation_scores) >= 0.98,
+    )
+    await append_audit("eval.completed", subject="agent:improvement", obj=result.model_dump())
+    return result
+
+async def propose_upgrade(candidate_version: str, diff: str, eval_result: EvalResult) -> dict[str, object]:
+    if not eval_result.passed:
+        raise ValueError("candidate cannot be proposed because eval gates failed")
+    proposal = {
+        "proposal_id": f"chg_{candidate_version}",
+        "change_type": "prompt_workflow_router",
+        "candidate_version": candidate_version,
+        "diff": diff,
+        "eval_delta": eval_result.model_dump(),
+        "approval_status": "awaiting_eval_steward",
+        "apollo_canary": {"ring": "mission-canary", "percentage": 5, "rollback_on": ["precision_drop", "latency_regression", "policy_denial_spike"]},
+    }
+    await publish("proposals.created", proposal)
+    return proposal
+```
+
+### Commander-facing API and UI contract
+
+```python
+from fastapi import APIRouter, Depends
+
+router = APIRouter(prefix="/missions/{mission_id}")
+
+@router.get("/situation")
+async def situation_view(mission_id: str, auth: AuthContext = Depends(current_auth)):
+    assert_mission_access(auth, mission_id)
+    return {
+        "mission_id": mission_id,
+        "open_alerts": await count_open_alerts(mission_id, auth.user_id),
+        "critical_entities": await top_risk_entities(mission_id, auth.user_id),
+        "approval_queue": await pending_approvals(mission_id, auth.user_id),
+        "model_health": await current_eval_health(mission_id),
+    }
+```
+
+```tsx
+export async function MissionSituation({ missionId }: { missionId: string }) {
+  const res = await fetch(`/api/missions/${missionId}/situation`, { cache: "no-store" });
+  const situation = await res.json();
+  return (
+    <section className="grid gap-4">
+      <h1>ClearGlassInc Artemis Mission Situation</h1>
+      <Metric label="Open Alerts" value={situation.open_alerts} />
+      <ApprovalQueue items={situation.approval_queue} />
+      <ModelHealthPanel health={situation.model_health} />
+    </section>
+  );
+}
+```
+
+### Apollo release gate
+
+```yaml
+apiVersion: apollo.palantir.com/v1
+kind: Release
+metadata:
+  name: artemis-agent-runtime
+spec:
+  artifact: registry.clearglass.example/artemis-agent-runtime:2.7.14
+  signatures:
+    required: true
+    sbom: required
+  rings:
+    - name: dev-secure
+      percent: 100
+    - name: mission-canary
+      percent: 5
+      healthGates:
+        - metric: eval_precision
+          operator: ">="
+          value: 0.91
+        - metric: p95_latency_ms
+          operator: "<="
+          value: 1800
+        - metric: policy_denial_spike
+          operator: "=="
+          value: false
+    - name: mission-prod
+      percent: 100
+  rollback:
+    automatic: true
+    target: previous-signed
+```
