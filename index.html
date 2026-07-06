@@ -121,6 +121,7 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
     <a href="#about">About</a>
     <a href="#platforms">Platforms</a>
     <a href="#architecture">Architecture</a>
+    <a href="#blog">Blog</a>
     <a href="#contact">Contact</a>
     <a href="#contact" class="nav-cta">REQUEST BRIEFING</a>
   </div>
@@ -132,6 +133,7 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
   <a href="#about">About</a>
   <a href="#platforms">Platforms</a>
   <a href="#architecture">Architecture</a>
+  <a href="#blog">Blog</a>
   <a href="#contact">Contact</a>
   <a href="#contact" class="nav-cta" style="display:inline-block;width:fit-content">REQUEST BRIEFING</a>
 </div>
@@ -239,6 +241,43 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
   </div>
   <pre class="code-panel"><code>feedback.recorded → eval_suite.refresh → change_proposal.created → human_review → apollo.canary(5%) → metrics_gate → promote_or_rollback</code></pre>
   <p style="margin-top:1.4rem"><a href="artemis-blueprint.md" class="btn-primary">READ TECHNICAL BLUEPRINT</a></p>
+</section>
+
+<section id="blog" class="section">
+  <div class="section-label">EXECUTIVE BLOG</div>
+  <h2 class="section-title">Advanced Campaign System Prompt for Governed AI Growth</h2>
+  <p class="hero-sub">A reusable, JSON-first master prompt for ClearGlass campaign operations: blog generation, SEO, social distribution, email nurture, visual direction, KPI targets, UTM templates, and weekly optimization.</p>
+  <div class="grid-3">
+    <article class="card">
+      <h3>Direct Answer</h3>
+      <p style="color:var(--muted);line-height:1.65">The campaign prompt is strategically strong, but long-form repetition reduces reliability. Artemis tightens it into a single master prompt with placeholders, strict JSON output, factual-claims constraints, and an iteration loop that improves performance without inventing metrics or partnerships.</p>
+    </article>
+    <article class="card">
+      <h3>System Architecture Fit</h3>
+      <ul>
+        <li>Prompt governance through AIP evaluations</li>
+        <li>Campaign assets versioned like production code</li>
+        <li>Human approval before publishing or routing changes</li>
+        <li>Python-backed KPI validation and content QA</li>
+      </ul>
+    </article>
+    <article class="card">
+      <h3>Recommended Defaults</h3>
+      <ul>
+        <li>tone: executive</li>
+        <li>length: long</li>
+        <li>cta: download</li>
+        <li>visuals: animated</li>
+        <li>focus_keyword: governed AI threat modeling</li>
+      </ul>
+    </article>
+  </div>
+  <pre class="code-panel"><code>{
+  "system": "ClearGlass creative growth engine",
+  "output": ["blog_html", "social_posts", "keywords", "meta", "email_sequence", "visuals_spec", "kpis", "utm_templates", "iterate"],
+  "rules": ["valid JSON only", "accurate claims", "human-approved optimization", "conversion-first"]
+}</code></pre>
+  <p style="margin-top:1.4rem"><a href="docs/advanced-campaign-system.md" class="btn-primary">OPEN ADVANCED SYSTEM PROMPT</a></p>
 </section>
 
 <section id="contact" class="section">
