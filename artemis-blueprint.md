@@ -859,3 +859,160 @@ spec:
     automatic: true
     target: previous-signed
 ```
+
+## Python Precision Implementation Blueprint
+
+This section turns the architecture into a Python-first control surface for ClearGlassInc Artemis. The goal is deterministic behavior around security-sensitive boundaries: typed mission envelopes, explicit policy decisions, reproducible evaluations, and auditable self-improvement proposals.
+
+### Typed mission envelope and policy-checked tool execution
+
+```python
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from enum import Enum
+from hashlib import sha256
+from typing import Any, Mapping
+
+
+class Decision(str, Enum):
+    ALLOW = "allow"
+    DENY = "deny"
+    REQUIRE_APPROVAL = "require_approval"
+
+
+@dataclass(frozen=True)
+class MissionEnvelope:
+    run_id: str
+    mission_id: str
+    operator_id: str
+    coalition_scope: frozenset[str]
+    classification: str
+    purpose: str
+    expires_at: datetime
+
+    def is_expired(self) -> bool:
+        return datetime.now(timezone.utc) >= self.expires_at
+
+
+@dataclass(frozen=True)
+class ToolRequest:
+    envelope: MissionEnvelope
+    tool_name: str
+    arguments: Mapping[str, Any]
+
+    @property
+    def arguments_hash(self) -> str:
+        stable = repr(sorted(self.arguments.items())).encode("utf-8")
+        return "sha256:" + sha256(stable).hexdigest()
+
+
+@dataclass(frozen=True)
+class PolicyDecision:
+    decision: Decision
+    reason: str
+    approval_role: str | None = None
+
+
+def authorize_tool(request: ToolRequest, operator_compartments: set[str]) -> PolicyDecision:
+    if request.envelope.is_expired():
+        return PolicyDecision(Decision.DENY, "expired mission envelope")
+    if request.envelope.classification.startswith("TOP_SECRET") and "TS" not in operator_compartments:
+        return PolicyDecision(Decision.DENY, "operator lacks required compartment")
+    if request.tool_name in {"action.prepare_package", "case.escalate"}:
+        return PolicyDecision(Decision.REQUIRE_APPROVAL, "operationally significant action", "mission_commander")
+    return PolicyDecision(Decision.ALLOW, "least-privilege tool execution permitted")
+```
+
+### Reproducible self-improvement evaluator
+
+```python
+from dataclasses import dataclass
+from statistics import mean
+
+
+@dataclass(frozen=True)
+class EvalCase:
+    case_id: str
+    prompt_input: str
+    expected_labels: set[str]
+    min_citation_count: int
+
+
+@dataclass(frozen=True)
+class EvalObservation:
+    case_id: str
+    predicted_labels: set[str]
+    citation_count: int
+    latency_ms: int
+    unsupported_claims: int
+
+
+@dataclass(frozen=True)
+class EvalReport:
+    precision: float
+    recall: float
+    citation_pass_rate: float
+    p95_latency_ms: int
+    unsupported_claim_rate: float
+    approved_for_canary: bool
+
+
+def evaluate_candidate(cases: list[EvalCase], observations: list[EvalObservation]) -> EvalReport:
+    by_case = {obs.case_id: obs for obs in observations}
+    precisions: list[float] = []
+    recalls: list[float] = []
+    citation_passes = 0
+    latencies: list[int] = []
+    unsupported = 0
+
+    for case in cases:
+        obs = by_case[case.case_id]
+        true_positive = len(obs.predicted_labels & case.expected_labels)
+        predicted = max(len(obs.predicted_labels), 1)
+        expected = max(len(case.expected_labels), 1)
+        precisions.append(true_positive / predicted)
+        recalls.append(true_positive / expected)
+        citation_passes += int(obs.citation_count >= case.min_citation_count)
+        latencies.append(obs.latency_ms)
+        unsupported += obs.unsupported_claims
+
+    latencies.sort()
+    p95_index = min(len(latencies) - 1, int(len(latencies) * 0.95))
+    report = EvalReport(
+        precision=mean(precisions),
+        recall=mean(recalls),
+        citation_pass_rate=citation_passes / len(cases),
+        p95_latency_ms=latencies[p95_index],
+        unsupported_claim_rate=unsupported / len(cases),
+        approved_for_canary=False,
+    )
+    return EvalReport(
+        **{**report.__dict__, "approved_for_canary": report.precision >= 0.91 and report.recall >= 0.86 and report.citation_pass_rate >= 0.98 and report.unsupported_claim_rate == 0 and report.p95_latency_ms <= 1800}
+    )
+```
+
+### Change proposal guardrail
+
+```python
+def build_change_proposal(candidate_id: str, baseline: EvalReport, candidate: EvalReport, diff: str) -> dict[str, Any]:
+    if not candidate.approved_for_canary:
+        status = "rejected_by_eval_gate"
+    elif candidate.precision < baseline.precision - 0.01:
+        status = "rejected_precision_regression"
+    else:
+        status = "awaiting_human_approval"
+
+    return {
+        "proposal_id": f"chg_{candidate_id}",
+        "organization": "ClearGlassInc Artemis",
+        "status": status,
+        "human_approval_required": True,
+        "diff": diff,
+        "baseline": baseline.__dict__,
+        "candidate": candidate.__dict__,
+        "rollback_target": "previous_signed_prompt_workflow_router_bundle",
+        "apollo_ring": "mission-canary" if status == "awaiting_human_approval" else None,
+    }
+```
