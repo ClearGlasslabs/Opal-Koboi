@@ -1,9 +1,3 @@
-"""Backward-compatible model exports.
-
-New code should import domain models from their dedicated modules. This module is
-retained so existing callers and migrations continue to work without change.
-"""
-
 from app.models.approval import Approval, ApprovalStatus
 from app.models.event import Event
 from app.models.inventory import InventoryMovement
