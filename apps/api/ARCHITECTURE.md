@@ -17,6 +17,7 @@ apps/api/
 │   │   ├── event.py
 │   │   ├── order.py
 │   │   ├── inventory.py
+│   │   ├── threat_model.py
 │   │   └── domain.py          # compatibility exports
 │   ├── schemas/
 │   │   ├── product.py
@@ -24,17 +25,21 @@ apps/api/
 │   │   ├── event.py
 │   │   ├── order.py
 │   │   ├── inventory.py
+│   │   ├── threat_model.py
 │   │   └── domain.py          # compatibility exports
 │   ├── crud/
 │   │   ├── product.py
 │   │   ├── approval.py
 │   │   ├── event.py
 │   │   ├── order.py
-│   │   └── inventory.py
+│   │   ├── inventory.py
+│   │   └── threat_model.py
 │   ├── services/
 │   │   ├── product_service.py
 │   │   ├── approval_service.py
 │   │   ├── audit_service.py
+│   │   ├── threat_engine.py
+│   │   ├── threat_model_service.py
 │   │   └── control_plane.py   # compatibility exports
 │   └── api/
 │       ├── dependencies.py
@@ -44,7 +49,8 @@ apps/api/
 │           ├── products.py
 │           ├── approvals.py
 │           ├── events.py
-│           └── inventory.py
+│           ├── inventory.py
+│           └── threat_models.py
 ├── migrations/
 ├── tests/
 ├── requirements.txt
@@ -75,6 +81,60 @@ apps/api/
 10. Orders are schema-only until payment and fulfillment services are implemented behind approval gates.
 11. Production API documentation is disabled.
 12. Database sessions roll back on failure and commit once per successful request.
+13. Threat analysis is deterministic and does not execute attacks, tools, payloads, or production changes.
+14. Every threat-analysis run records its architecture digest, rules digest, engine version, actor, and request identity.
+15. Threat findings contain evidence and mitigations but never grant authority to act on a target system.
+
+## Autonomous threat-modeling subsystem
+
+The threat-modeling subsystem converts a typed architecture graph into reproducible findings at machine speed. It is intended for defensive architecture review, CI validation, critical-infrastructure assurance, agentic-system governance, and cyber-physical safety analysis.
+
+### Inputs
+
+A threat model contains:
+
+- Components with trust zone, data classification, exposure, security controls, agent capabilities, memory, sensor, and actuation properties.
+- Data flows with protocol, authentication, encryption, trust-boundary, and direction metadata.
+- Explicit trust boundaries between zones.
+- A canonical SHA-256 architecture digest.
+
+### Deterministic analysis
+
+`app/services/threat_engine.py` evaluates versioned rules across:
+
+- STRIDE: spoofing, tampering, repudiation, information disclosure, denial of service, and elevation/tool abuse.
+- Agentic AI: prompt injection, tool abuse, persistent-memory poisoning, and agent-to-agent collusion.
+- Cyber-physical systems: sensor spoofing and actuator hijacking.
+- Software supply chain: dependency and update-channel compromise.
+
+The engine does not depend on an LLM. The same validated architecture and rule version produce the same ordered finding set. An LLM may later propose candidate architecture facts or mitigations, but those outputs must remain untrusted and pass through the typed validation and deterministic rule engine.
+
+### Risk scoring
+
+Each finding stores bounded 1-5 values for likelihood, impact, exposure, and control gap. The engine calculates a 0-100 score with consequence weighted most heavily, then exposure and control weakness. Findings are sorted by descending score with stable deterministic tie-breaking.
+
+### Persistence and provenance
+
+Migration `0003_autonomous_threat_modeling` adds:
+
+- `threat_models`: versioned architecture snapshots and canonical digests.
+- `threat_analysis_runs`: idempotent run identity, engine version, input digest, rules digest, finding count, and maximum risk.
+- `threat_findings`: category, scenario, asset, component, trust boundary, scoring factors, evidence, and mitigation guidance.
+
+Every create and analyze operation also appends a tamper-evident control-plane event. Analysis requires the expected model version and fails closed when the stored architecture no longer matches its digest.
+
+### API surface
+
+All routes remain under `/api/v1` and require the existing control-plane key:
+
+- `POST /threat-models`
+- `GET /threat-models`
+- `GET /threat-models/{id}`
+- `POST /threat-models/{id}/analyze`
+- `GET /threat-models/{id}/runs`
+- `GET /threat-models/{id}/findings`
+
+The API creates models and evidence only. It does not perform scanning, exploitation, red-team execution, production remediation, or physical actuation.
 
 ## Why the pasted prototype was not copied literally
 
@@ -103,4 +163,6 @@ Migration `0002_orders_inventory` adds:
 - `orders` with governed status, exact money, currency, versioning, and external-reference uniqueness.
 - `inventory_movements` with immutable request identity, product linkage, actor, reason, signed delta, resulting inventory, and non-negative constraints.
 
-No payment, refund, fulfillment, or order-execution endpoint is enabled by this migration.
+Migration `0003_autonomous_threat_modeling` adds the architecture, analysis-run, and finding evidence stores described above.
+
+No payment, refund, fulfillment, order-execution, offensive-testing, or autonomous-remediation endpoint is enabled by these migrations.
