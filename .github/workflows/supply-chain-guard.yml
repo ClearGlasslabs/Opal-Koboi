@@ -1,0 +1,93 @@
+name: Artemis Supply Chain Guard
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - "security/**"
+      - "apps/api/**"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+      - "security/**"
+      - "apps/api/**"
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: supply-chain-guard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy-gate:
+    name: CI trust-boundary policy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout trusted workflow revision
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Run dependency-free policy scanner
+        run: |
+          set -euo pipefail
+          python3 security/ci_guard.py \
+            --json-output artemis-ci-guard.json \
+            --sarif-output artemis-ci-guard.sarif \
+            --summary-output artemis-ci-guard.md
+
+      - name: Upload SARIF
+        if: always()
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4.36.0
+        with:
+          sarif_file: artemis-ci-guard.sarif
+
+  api-validation:
+    name: Control-plane migration and tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: apps/api
+    env:
+      CONTROL_PLANE_DATABASE_URL: sqlite+pysqlite:///./ci-control-plane.db
+      CONTROL_PLANE_API_KEY: ci-only-key-xxxxxxxxxxxxxxxxxxxx
+    steps:
+      - name: Checkout trusted workflow revision
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: apps/api/requirements-dev.txt
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Verify migration
+        run: alembic upgrade head
+
+      - name: Lint control-plane code
+        run: ruff check app tests migrations
+
+      - name: Run control-plane tests
+        run: pytest -q

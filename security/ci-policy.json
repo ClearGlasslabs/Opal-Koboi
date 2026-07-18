@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "fail_on": ["critical", "high"],
+  "trusted_action_owners": ["actions", "github", "Azure"],
+  "allowed_mutable_refs": [],
+  "untrusted_events": [
+    "pull_request",
+    "pull_request_target",
+    "issue_comment",
+    "issues",
+    "discussion",
+    "discussion_comment",
+    "workflow_run"
+  ]
+}

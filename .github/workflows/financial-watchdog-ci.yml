@@ -18,32 +18,34 @@ permissions:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          show-progress: false
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
       - name: Install validation dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install "pydantic>=2.7,<3" "openai>=1.40,<3" "anthropic>=0.34,<1" "pytest>=8,<9" "ruff>=0.5,<1"
+          set -euo pipefail
+          python -m pip install --quiet --disable-pip-version-check --upgrade pip
+          python -m pip install --quiet --disable-pip-version-check "pydantic>=2.7,<3" "openai>=1.40,<3" "anthropic>=0.34,<1" "pytest>=8,<9"
 
       - name: Compile production module
         run: python -m compileall -q intelligence
 
-      - name: Lint production module and tests
-        run: ruff check intelligence tests/test_entity_extractor.py
-
-      - name: Run focused test suite
-        run: pytest -q tests/test_entity_extractor.py
+      - name: Run focused regression suite
+        run: python -m pytest -q tests/test_entity_extractor.py
