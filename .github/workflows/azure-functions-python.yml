@@ -2,35 +2,40 @@ name: Deploy Python project to Azure Function App
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
-      - 'api/**'
-      - 'function_app/**'
-      - 'functions/**'
-      - 'host.json'
-      - 'requirements.txt'
-      - '.github/workflows/azure-functions-python.yml'
+      - "api/**"
+      - "function_app/**"
+      - "functions/**"
+      - "host.json"
+      - "requirements.txt"
+      - ".github/workflows/azure-functions-python.yml"
   workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: {}
 
 env:
-  PYTHON_VERSION: '3.11'
+  PYTHON_VERSION: "3.11"
   AZURE_FUNCTIONAPP_PACKAGE_PATH: ${{ vars.AZURE_FUNCTIONAPP_PACKAGE_PATH || 'api' }}
   AZURE_FUNCTIONAPP_NAME: ${{ vars.AZURE_FUNCTIONAPP_NAME }}
+  AZURE_CORE_OUTPUT: none
 
 jobs:
   validate:
     name: Validate Azure Function package
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
     outputs:
       should_deploy: ${{ steps.detect.outputs.should_deploy }}
       package_path: ${{ steps.detect.outputs.package_path }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
 
       - name: Detect deployable Function App package
         id: detect
@@ -47,7 +52,7 @@ jobs:
             elif [ -d "functions" ]; then
               PACKAGE_PATH="functions"
             else
-              echo "No Azure Function package found. Static GitHub Pages changes will not be deployed to Azure Functions."
+              echo "No Azure Function package found; deployment skipped."
               echo "should_deploy=false" >> "$GITHUB_OUTPUT"
               echo "package_path=$PACKAGE_PATH" >> "$GITHUB_OUTPUT"
               exit 0
@@ -55,34 +60,48 @@ jobs:
           fi
 
           if [ ! -f "$PACKAGE_PATH/host.json" ] && [ ! -f "host.json" ]; then
-            echo "No host.json found in package path. Skipping Azure Functions deployment."
+            echo "No host.json found; deployment skipped."
             echo "should_deploy=false" >> "$GITHUB_OUTPUT"
             echo "package_path=$PACKAGE_PATH" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          if [ ! -n "${AZURE_FUNCTIONAPP_NAME:-}" ]; then
-            echo "AZURE_FUNCTIONAPP_NAME repository variable is not set. Skipping Azure Functions deployment."
-            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
-            echo "package_path=$PACKAGE_PATH" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+          required_vars=(AZURE_FUNCTIONAPP_NAME AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID)
+          for name in "${required_vars[@]}"; do
+            if [ -z "${!name:-}" ]; then
+              echo "$name is not configured; deployment skipped."
+              echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+              echo "package_path=$PACKAGE_PATH" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
 
           echo "should_deploy=true" >> "$GITHUB_OUTPUT"
           echo "package_path=$PACKAGE_PATH" >> "$GITHUB_OUTPUT"
+        env:
+          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
   deploy:
-    name: Deploy to Azure Functions
+    name: Deploy to Azure Functions with OIDC
     needs: validate
     if: needs.validate.outputs.should_deploy == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
     environment: production
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -94,15 +113,19 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then
             pip install --target=".python_packages/lib/site-packages" -r requirements.txt
-          else
-            echo "requirements.txt not found in package path; continuing without dependency install."
           fi
 
-      - name: Deploy with publish profile
-        uses: Azure/functions-action@v1
+      - name: Authenticate to Azure with GitHub OIDC
+        uses: Azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy Function App
+        uses: Azure/functions-action@bc63708cc6539760eea18d8a7de4ce8ef5fdf593 # v1
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           package: ${{ needs.validate.outputs.package_path }}
-          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
           scm-do-build-during-deployment: true
           enable-oryx-build: true
