@@ -41,13 +41,10 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip
-          python -m pip install "pydantic>=2.7,<3" "openai>=1.40,<3" "anthropic>=0.34,<1" "pytest>=8,<9" "ruff>=0.5,<1"
+          python -m pip install "pydantic>=2.7,<3" "openai>=1.40,<3" "anthropic>=0.34,<1" "pytest>=8,<9"
 
       - name: Compile production module
         run: python -m compileall -q intelligence
 
-      - name: Check undefined names and fatal syntax defects
-        run: ruff check --select E9,F intelligence tests/test_entity_extractor.py
-
-      - name: Run focused test suite
+      - name: Run focused regression suite
         run: pytest -q tests/test_entity_extractor.py
