@@ -30,6 +30,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 1
+          show-progress: false
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -40,8 +41,8 @@ jobs:
       - name: Install validation dependencies
         run: |
           set -euo pipefail
-          python -m pip install --upgrade pip
-          python -m pip install "pydantic>=2.7,<3" "openai>=1.40,<3" "anthropic>=0.34,<1" "pytest>=8,<9"
+          python -m pip install --quiet --disable-pip-version-check --upgrade pip
+          python -m pip install --quiet --disable-pip-version-check "pydantic>=2.7,<3" "openai>=1.40,<3" "anthropic>=0.34,<1" "pytest>=8,<9"
 
       - name: Compile production module
         run: python -m compileall -q intelligence
