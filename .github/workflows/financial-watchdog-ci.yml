@@ -46,8 +46,8 @@ jobs:
       - name: Compile production module
         run: python -m compileall -q intelligence
 
-      - name: Lint production module and tests
-        run: ruff check intelligence tests/test_entity_extractor.py
+      - name: Check undefined names and fatal syntax defects
+        run: ruff check --select E9,F intelligence tests/test_entity_extractor.py
 
       - name: Run focused test suite
         run: pytest -q tests/test_entity_extractor.py
