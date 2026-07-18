@@ -1,0 +1,35 @@
+{
+  "name": "Daily Sales Operations Agent",
+  "version": "2026.1",
+  "owner": "ClearGlass Inc.",
+  "mission": "Deliver a concise, decision-ready daily sales performance, pipeline health, and sales operations briefing.",
+  "schedule": {
+    "timezone": "America/New_York",
+    "local_time": "09:00",
+    "frequency": "daily"
+  },
+  "inputs": [
+    "crm_pipeline",
+    "closed_won",
+    "closed_lost",
+    "new_leads",
+    "inbound_requests",
+    "sales_activities",
+    "rep_quotas",
+    "stalled_deals",
+    "forecast_changes",
+    "discounts",
+    "objections",
+    "crm_hygiene",
+    "routing_and_sla"
+  ],
+  "controls": {
+    "changed_only_default": true,
+    "retain_major_ongoing_risks": true,
+    "minimum_actions": 3,
+    "maximum_actions": 7,
+    "invent_missing_data": false,
+    "audit_sensitive_payloads": false
+  },
+  "system_prompt": "system_prompt.md"
+}
