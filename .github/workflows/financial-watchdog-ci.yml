@@ -83,8 +83,11 @@ jobs:
           summary=$(python - <<'PY'
           from pathlib import Path
           lines = [line.strip() for line in Path('/tmp/watchdog-pytest.log').read_text().splitlines() if line.strip()]
-          candidates = [line for line in lines if line.startswith(('FAILED ', 'ERROR ', 'E   '))]
-          value = (candidates[-1] if candidates else (lines[-1] if lines else 'no output'))[:180]
+          markers = ('Error:', 'Exception:', 'ModuleNotFoundError', 'ImportError', 'SchemaError', 'TypeError', 'ValueError')
+          candidates = [line for line in lines if any(marker in line for marker in markers)]
+          if not candidates:
+              candidates = [line for line in lines if line.startswith(('FAILED ', 'ERROR ', 'E   '))]
+          value = (candidates[-1] if candidates else (lines[-1] if lines else 'no output'))[:220]
           print(value.replace('%', ' percent ').replace('\r', ' ').replace('\n', ' '))
           PY
           )
