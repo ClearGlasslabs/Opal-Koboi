@@ -86,7 +86,8 @@ jobs:
       - name: Verify migration
         run: alembic upgrade head
 
-      - name: Lint and test
-        run: |
-          ruff check app tests migrations
-          pytest -q
+      - name: Lint control-plane code
+        run: ruff check app tests migrations
+
+      - name: Run control-plane tests
+        run: pytest -q
