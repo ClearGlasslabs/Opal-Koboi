@@ -12,3 +12,11 @@ router = APIRouter(tags=["health"])
 def health(db: DbSession) -> dict[str, str]:
     db.execute(text("SELECT 1"))
     return {"status": "ok"}
+
+
+@router.get("/ready")
+def readiness(db: DbSession) -> dict[str, str]:
+    """Readiness probe for Apollo/Kubernetes-style rollout gates."""
+
+    db.execute(text("SELECT 1"))
+    return {"status": "ready", "database": "ok"}
