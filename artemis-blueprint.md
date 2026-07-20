@@ -1016,3 +1016,322 @@ def build_change_proposal(candidate_id: str, baseline: EvalReport, candidate: Ev
         "apollo_ring": "mission-canary" if status == "awaiting_human_approval" else None,
     }
 ```
+
+## Defense-Grade Full-Stack Build Plan
+
+This build plan is the implementation spine for ClearGlassInc Artemis. It keeps Palantir products in their intended roles: Gotham is the operational intelligence surface, Foundry is the governed data and ontology backbone, AIP is the controlled agent and evaluation runtime, and Apollo is the signed deployment and rollback authority.
+
+### Service boundaries and APIs
+
+| Service | Runtime | Responsibilities | Hard security boundary |
+|---|---|---|---|
+| `mission-bff` | TypeScript / Next.js route handlers | UI aggregation, streaming mission status, display-safe redaction | Never bypasses backend policy decisions |
+| `artemis-api` | Python / FastAPI | Case, alert, feedback, approvals, proposal APIs | Requires mission-scoped auth context on every request |
+| `ontology-gateway` | Python | Foundry Ontology object actions, relationship reads, lineage joins | Returns only policy-filtered object sets |
+| `agent-runtime` | Python | AIP tool registry, model router, workflow executor | Tools require signed envelopes and purpose binding |
+| `eval-service` | Python | Frozen eval suites, candidate scoring, regression gates | Candidates cannot deploy directly |
+| `audit-writer` | Python | Append-only audit, hash chaining, SIEM export | No update/delete API exposed |
+| `apollo-release-controller` | Apollo-managed | Canary, promotion, rollback, kill switches | Only signed approved artifacts are runnable |
+
+### End-to-end runtime sequence
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Source as Live Source
+    participant Foundry as Foundry Pipeline
+    participant Ontology as Foundry Ontology
+    participant AIP as AIP Agent Runtime
+    participant API as Artemis API
+    participant Gotham as Gotham Case UI
+    participant Operator as Human Operator
+    participant Eval as Eval Service
+    participant Apollo as Apollo
+
+    Source->>Foundry: intel.raw event
+    Foundry->>Foundry: validate, normalize, classify, dedupe
+    Foundry->>Ontology: upsert objects + temporal links + lineage
+    Ontology->>AIP: least-privilege task envelope
+    AIP->>AIP: triage, enrich, correlate, recommend
+    AIP->>API: create alert + draft action package
+    API->>Gotham: open/update case
+    Gotham->>Operator: display evidence, confidence, citations
+    Operator->>API: approve/edit/reject with rationale
+    API->>Eval: feedback.recorded + outcome labels
+    Eval->>Eval: generate candidate improvement + frozen eval run
+    Eval->>Operator: change proposal for approval
+    Operator->>Apollo: approve signed canary
+    Apollo->>AIP: deploy candidate ring or rollback
+```
+
+### Storage contracts
+
+```sql
+CREATE TABLE artemis_agent_runs (
+    run_id TEXT PRIMARY KEY,
+    mission_id TEXT NOT NULL,
+    operator_id TEXT NOT NULL,
+    prompt_version TEXT NOT NULL,
+    workflow_version TEXT NOT NULL,
+    model_id TEXT NOT NULL,
+    input_hash TEXT NOT NULL,
+    output_hash TEXT NOT NULL,
+    policy_decisions JSONB NOT NULL,
+    tool_calls JSONB NOT NULL,
+    started_at TIMESTAMPTZ NOT NULL,
+    completed_at TIMESTAMPTZ,
+    CHECK (input_hash LIKE 'sha256:%'),
+    CHECK (output_hash LIKE 'sha256:%')
+);
+
+CREATE TABLE artemis_feedback_signals (
+    signal_id TEXT PRIMARY KEY,
+    mission_id TEXT NOT NULL,
+    target_type TEXT NOT NULL CHECK (target_type IN ('alert', 'agent_run', 'intel_product', 'entity_link', 'workflow')),
+    target_id TEXT NOT NULL,
+    signal_type TEXT NOT NULL,
+    rating INTEGER CHECK (rating BETWEEN 1 AND 5),
+    correction_redacted TEXT,
+    outcome_label TEXT,
+    created_by TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    source_run_id TEXT REFERENCES artemis_agent_runs(run_id)
+);
+
+CREATE TABLE artemis_change_proposals (
+    proposal_id TEXT PRIMARY KEY,
+    candidate_version TEXT NOT NULL,
+    change_type TEXT NOT NULL CHECK (change_type IN ('prompt', 'workflow', 'router', 'heuristic', 'eval')),
+    diff_hash TEXT NOT NULL,
+    eval_report JSONB NOT NULL,
+    risk_score NUMERIC NOT NULL CHECK (risk_score >= 0 AND risk_score <= 1),
+    approval_status TEXT NOT NULL,
+    rollback_target TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    approved_by TEXT,
+    approved_at TIMESTAMPTZ
+);
+```
+
+### Python-first package skeleton
+
+```text
+artemis/
+  api/
+    main.py
+    dependencies.py
+    routes_alerts.py
+    routes_feedback.py
+    routes_proposals.py
+  core/
+    audit.py
+    crypto.py
+    settings.py
+    telemetry.py
+  ontology/
+    client.py
+    queries.py
+    schemas.py
+    permissions.py
+  agents/
+    router.py
+    tools.py
+    workflows.py
+    prompts.py
+  evals/
+    datasets.py
+    metrics.py
+    runner.py
+    proposal.py
+  policy/
+    opa.py
+    decisions.py
+  streaming/
+    consumers.py
+    producers.py
+```
+
+### Deterministic model routing with explicit risk controls
+
+```python
+from dataclasses import dataclass
+from enum import StrEnum
+
+class TaskClass(StrEnum):
+    TRIAGE = "triage"
+    SUMMARIZATION = "summarization"
+    CORRELATION = "correlation"
+    RECOMMENDATION = "recommendation"
+    SELF_IMPROVEMENT = "self_improvement"
+
+@dataclass(frozen=True)
+class ModelCandidate:
+    model_id: str
+    max_classification: str
+    p95_latency_ms: int
+    eval_precision: float
+    eval_recall: float
+    allowed_tasks: frozenset[TaskClass]
+    sovereign_runtime: bool
+
+@dataclass(frozen=True)
+class RoutingRequest:
+    task: TaskClass
+    classification: str
+    latency_budget_ms: int
+    requires_sovereign_runtime: bool
+    min_precision: float
+    min_recall: float
+
+
+def route_model(request: RoutingRequest, candidates: list[ModelCandidate]) -> ModelCandidate:
+    eligible = [
+        candidate for candidate in candidates
+        if request.task in candidate.allowed_tasks
+        and candidate.p95_latency_ms <= request.latency_budget_ms
+        and candidate.eval_precision >= request.min_precision
+        and candidate.eval_recall >= request.min_recall
+        and (not request.requires_sovereign_runtime or candidate.sovereign_runtime)
+    ]
+    if not eligible:
+        raise RuntimeError("no approved model satisfies mission routing policy")
+    return sorted(eligible, key=lambda c: (-c.eval_precision, c.p95_latency_ms, c.model_id))[0]
+```
+
+### Human approval gate for operational actions
+
+```python
+from pydantic import BaseModel, Field
+
+class ActionPackage(BaseModel):
+    package_id: str
+    mission_id: str
+    action_type: str
+    summary: str
+    evidence_ids: list[str]
+    risk_score: float = Field(ge=0, le=1)
+    reversible: bool
+    requires_commander_approval: bool = True
+
+
+def approval_gate(package: ActionPackage) -> str:
+    if package.action_type in {"external_notification", "credential_rotation", "tasking_request", "public_release"}:
+        return "commander_required"
+    if package.risk_score >= 0.65 or not package.reversible:
+        return "supervisor_required"
+    return "analyst_review_required"
+```
+
+### Immutable audit hash chain
+
+```python
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from hashlib import sha256
+import json
+
+@dataclass(frozen=True)
+class AuditEvent:
+    event_id: str
+    event_type: str
+    subject: str
+    object_ref: str
+    mission_id: str
+    payload_hash: str
+    previous_hash: str
+    created_at: datetime
+
+    def chain_hash(self) -> str:
+        encoded = json.dumps(
+            {
+                "event_id": self.event_id,
+                "event_type": self.event_type,
+                "subject": self.subject,
+                "object_ref": self.object_ref,
+                "mission_id": self.mission_id,
+                "payload_hash": self.payload_hash,
+                "previous_hash": self.previous_hash,
+                "created_at": self.created_at.isoformat(),
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        return "sha256:" + sha256(encoded).hexdigest()
+
+
+def new_audit_event(event_type: str, subject: str, object_ref: str, mission_id: str, payload: dict, previous_hash: str) -> AuditEvent:
+    payload_hash = "sha256:" + sha256(json.dumps(payload, sort_keys=True, default=str).encode("utf-8")).hexdigest()
+    return AuditEvent(
+        event_id=f"aud_{payload_hash[-16:]}",
+        event_type=event_type,
+        subject=subject,
+        object_ref=object_ref,
+        mission_id=mission_id,
+        payload_hash=payload_hash,
+        previous_hash=previous_hash,
+        created_at=datetime.now(timezone.utc),
+    )
+```
+
+### Operator-feedback-to-eval conversion
+
+```python
+from collections import defaultdict
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class FeedbackSignal:
+    signal_id: str
+    target_id: str
+    signal_type: str
+    rating: int | None
+    outcome_label: str | None
+    correction_redacted: str | None
+
+@dataclass(frozen=True)
+class GeneratedEvalCase:
+    case_id: str
+    target_run_id: str
+    expected_labels: frozenset[str]
+    adversarial_notes: str
+
+
+def build_eval_cases(signals: list[FeedbackSignal]) -> list[GeneratedEvalCase]:
+    grouped: dict[str, list[FeedbackSignal]] = defaultdict(list)
+    for signal in signals:
+        grouped[signal.target_id].append(signal)
+
+    cases: list[GeneratedEvalCase] = []
+    for run_id, run_signals in grouped.items():
+        labels = {s.outcome_label for s in run_signals if s.outcome_label}
+        low_trust = any((s.rating or 5) <= 2 for s in run_signals)
+        if labels or low_trust:
+            cases.append(
+                GeneratedEvalCase(
+                    case_id=f"eval_{run_id}",
+                    target_run_id=run_id,
+                    expected_labels=frozenset(labels),
+                    adversarial_notes="include unsupported-claim and citation checks" if low_trust else "standard regression case",
+                )
+            )
+    return cases
+```
+
+### Observability SLOs
+
+| Signal | Target | Rollback or escalation trigger |
+|---|---:|---|
+| Alert triage p95 latency | <= 1.8 seconds | > 2.2 seconds for 10 minutes |
+| Unsupported claim rate | <= 1% | > 1.5% in canary |
+| Citation coverage | >= 98% | < 97% in any mission ring |
+| Policy denial spike | baseline + 3 sigma | immediate canary freeze |
+| Operator override rate | non-increasing vs baseline | +10% relative increase |
+| True-positive precision | >= 91% | any statistically significant drop |
+| Recall | >= 86% | > 2% relative drop |
+
+### Explicit non-goals and safety constraints
+
+- ClearGlassInc Artemis does not autonomously change mission goals, policy boundaries, coalition release marks, or approval thresholds.
+- ClearGlassInc Artemis does not execute operational responses without a human approval artifact bound to the package ID, approver ID, policy version, and timestamp.
+- ClearGlassInc Artemis does not train directly on unrestricted sensitive text; improvement datasets use redaction, minimization, lineage, and compartment-aware storage.
+- ClearGlassInc Artemis does not promote a prompt, workflow, router, or heuristic unless frozen evals pass, an authorized reviewer approves, and Apollo can roll back to a previous signed artifact.
