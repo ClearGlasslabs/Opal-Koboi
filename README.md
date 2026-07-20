@@ -27,6 +27,7 @@ This repository now includes a production-oriented architecture blueprint for **
 - Read the defense-grade architecture blueprint: [`docs/clearglassinc-artemis-defense-grade-blueprint.md`](./docs/clearglassinc-artemis-defense-grade-blueprint.md)
 - Read the advanced blog/campaign system prompt: [`docs/advanced-campaign-system.md`](./docs/advanced-campaign-system.md)
 - Core guarantees: human-approved self-upgrades, immutable audit trails, mission-scoped authorization, citation-first AI outputs, rollback-safe deployment, and Python-first precision guardrails.
+- Deployment execution guard: `intelligence/artemis_deploy_execute.py` converts an approved self-improvement proposal into an Apollo-style verify/canary/observe/rollback plan without mutating production state.
 - New field-operations pattern: enumeration workload planning is route/support automation only; resident contact, interviews, verification, and official submissions remain human-controlled.
 
 ## 🌐 Live Site

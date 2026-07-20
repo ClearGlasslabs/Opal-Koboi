@@ -826,6 +826,10 @@ export async function MissionSituation({ missionId }: { missionId: string }) {
 }
 ```
 
+### Apollo deployment execution guard
+
+`intelligence/artemis_deploy_execute.py` provides the Python-first handoff from governed self-improvement to deployment execution. It accepts a `ChangeProposal`, a positive `ProposalDecision`, a signed `DeploymentArtifact`, an approver identity, an approval ticket, and a policy bundle version. The output is a deterministic `DeploymentPlan` with four explicit Apollo-style steps: verify the signed artifact, deploy the canary ring, observe mission health, and roll back to the previous signed digest on regression. The guard fails closed when proposals are rejected, policy changes attempt to bypass manual security governance, rollback metadata is missing, or artifact versions do not match the approved proposal.
+
 ### Apollo release gate
 
 ```yaml
