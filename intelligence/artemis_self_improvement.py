@@ -91,6 +91,127 @@ class ProposalDecision(StrictModel):
     canary_percent: int = Field(default=5, ge=1, le=25)
 
 
+class FeedbackReadinessReport(StrictModel):
+    """Deterministic signal-quality report for building eval sets.
+
+    Artemis treats operator feedback as mission evidence, not as permission for
+    autonomous behavior changes. This report makes the data-product boundary
+    explicit: enough diverse, recent, high-signal feedback can create an eval
+    candidate set, but prompt/workflow/model changes still flow through
+    ``ChangeProposal`` and human approval.
+    """
+
+    mission_id: str
+    signal_count: int
+    unique_targets: int
+    outcome_counts: dict[str, int]
+    average_rating: float | None
+    correction_count: int
+    ready_for_eval_generation: bool
+    blockers: list[str]
+
+
+class DriftAlert(StrictModel):
+    metric_name: str
+    baseline_value: float
+    candidate_value: float
+    relative_change: float
+    severity: Literal["watch", "review", "halt"]
+    reason: str
+
+
+def summarize_feedback_readiness(
+    signals: list[FeedbackSignal],
+    *,
+    mission_id: str,
+    min_signals: int = 25,
+    min_unique_targets: int = 10,
+) -> FeedbackReadinessReport:
+    """Summarize whether feedback is strong enough to seed governed evals."""
+
+    mission_signals = [signal for signal in signals if signal.mission_id == mission_id]
+    outcome_counts: dict[str, int] = {}
+    ratings: list[float] = []
+    correction_count = 0
+    unique_targets = {signal.target_id for signal in mission_signals}
+
+    for signal in mission_signals:
+        outcome_counts[signal.outcome] = outcome_counts.get(signal.outcome, 0) + 1
+        if signal.rating is not None:
+            ratings.append(signal.rating)
+        if signal.correction:
+            correction_count += 1
+
+    blockers: list[str] = []
+    if len(mission_signals) < min_signals:
+        blockers.append(f"requires at least {min_signals} mission-scoped feedback signals")
+    if len(unique_targets) < min_unique_targets:
+        blockers.append(f"requires at least {min_unique_targets} unique targets to avoid overfitting")
+    if correction_count == 0 and not {"false_positive", "stale", "duplicate"}.intersection(outcome_counts):
+        blockers.append("requires corrections or negative outcomes for discriminative eval cases")
+
+    average_rating = round(sum(ratings) / len(ratings), 4) if ratings else None
+    return FeedbackReadinessReport(
+        mission_id=mission_id,
+        signal_count=len(mission_signals),
+        unique_targets=len(unique_targets),
+        outcome_counts=outcome_counts,
+        average_rating=average_rating,
+        correction_count=correction_count,
+        ready_for_eval_generation=not blockers,
+        blockers=blockers,
+    )
+
+
+def detect_metric_drift(
+    baseline: EvalMetrics,
+    candidate: EvalMetrics,
+    *,
+    halt_threshold: float = 0.20,
+    review_threshold: float = 0.10,
+) -> list[DriftAlert]:
+    """Create reviewable drift alerts from baseline and candidate eval metrics."""
+
+    alerts: list[DriftAlert] = []
+    metric_directions = {
+        "precision": "higher_is_better",
+        "recall": "higher_is_better",
+        "unsupported_claim_rate": "lower_is_better",
+        "p95_latency_ms": "lower_is_better",
+        "policy_denial_rate": "lower_is_better",
+        "operator_trust": "higher_is_better",
+    }
+
+    for metric_name, direction in metric_directions.items():
+        base_value = float(getattr(baseline, metric_name))
+        cand_value = float(getattr(candidate, metric_name))
+        denominator = base_value if base_value != 0 else 1.0
+        relative_change = (cand_value - base_value) / denominator
+        harmful_change = -relative_change if direction == "higher_is_better" else relative_change
+
+        if harmful_change >= halt_threshold:
+            severity: Literal["watch", "review", "halt"] = "halt"
+        elif harmful_change >= review_threshold:
+            severity = "review"
+        elif abs(relative_change) >= review_threshold:
+            severity = "watch"
+        else:
+            continue
+
+        alerts.append(
+            DriftAlert(
+                metric_name=metric_name,
+                baseline_value=base_value,
+                candidate_value=cand_value,
+                relative_change=round(relative_change, 6),
+                severity=severity,
+                reason=f"{metric_name} changed {relative_change:.1%} versus governed baseline",
+            )
+        )
+
+    return alerts
+
+
 def evaluate_change_proposal(proposal: ChangeProposal) -> ProposalDecision:
     """Fail-closed gate for Artemis self-improvement proposals.
 
