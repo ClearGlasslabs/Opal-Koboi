@@ -1016,3 +1016,212 @@ def build_change_proposal(candidate_id: str, baseline: EvalReport, candidate: Ev
         "apollo_ring": "mission-canary" if status == "awaiting_human_approval" else None,
     }
 ```
+
+## Mission-Grade Full-Stack Implementation Contract
+
+This contract closes the gap between architecture narrative and deployable Artemis services. It defines the versioned interfaces that ClearGlassInc Artemis uses to keep Gotham operations, Foundry ontology objects, AIP agents, and Apollo release controls synchronized without permitting unsafe autonomous behavior.
+
+### Versioned service boundaries
+
+| Boundary | Owner | Interface | Failure mode | Safe fallback |
+|---|---|---|---|---|
+| Live ingestion to Foundry | Data platform | `intel.raw.v1` and `intel.normalized.v1` schemas | malformed or late events | quarantine dataset plus steward alert |
+| Foundry ontology to backend | Ontology team | permission-filtered object actions and object sets | missing ACL or lineage | deny read and emit audit event |
+| Backend to AIP tools | AI platform | signed `ToolRequest` envelope | expired token, policy denial, timeout | no tool execution; return cited refusal |
+| AIP to Gotham casework | Mission apps | `ActionPackageDraft` object action | operational action without approval | block transition at approval service |
+| Feedback to improvement loop | Eval steward | immutable `FeedbackSignal` event | unverifiable or sensitive free text | redact, hash, and require steward review |
+| Release to runtime | Platform SRE | Apollo signed artifact and health gates | eval regression or canary anomaly | automatic rollback to previous signed version |
+
+### PostgreSQL operational schema
+
+```sql
+CREATE TABLE mission_contexts (
+  mission_id TEXT PRIMARY KEY,
+  display_name TEXT NOT NULL,
+  classification TEXT NOT NULL,
+  coalition_scope TEXT[] NOT NULL DEFAULT '{}',
+  approval_matrix JSONB NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE agent_runs (
+  run_id TEXT PRIMARY KEY,
+  mission_id TEXT NOT NULL REFERENCES mission_contexts(mission_id),
+  operator_id TEXT NOT NULL,
+  prompt_version TEXT NOT NULL,
+  workflow_version TEXT NOT NULL,
+  model_id TEXT NOT NULL,
+  tool_argument_hashes TEXT[] NOT NULL DEFAULT '{}',
+  output_hash TEXT,
+  policy_decisions JSONB NOT NULL DEFAULT '[]'::jsonb,
+  started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  completed_at TIMESTAMPTZ,
+  CHECK (completed_at IS NULL OR completed_at >= started_at)
+);
+
+CREATE TABLE feedback_signals (
+  signal_id TEXT PRIMARY KEY,
+  mission_id TEXT NOT NULL REFERENCES mission_contexts(mission_id),
+  target_type TEXT NOT NULL CHECK (target_type IN ('alert', 'agent_run', 'intel_product', 'entity_link')),
+  target_id TEXT NOT NULL,
+  signal_type TEXT NOT NULL,
+  rating INTEGER CHECK (rating BETWEEN 1 AND 5),
+  correction_redacted TEXT,
+  correction_hash TEXT,
+  mission_outcome JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_by TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE change_proposals (
+  proposal_id TEXT PRIMARY KEY,
+  candidate_version TEXT NOT NULL UNIQUE,
+  change_type TEXT NOT NULL CHECK (change_type IN ('prompt', 'workflow', 'router', 'heuristic', 'eval')),
+  diff_uri TEXT NOT NULL,
+  eval_report JSONB NOT NULL,
+  risk_score NUMERIC NOT NULL CHECK (risk_score >= 0 AND risk_score <= 1),
+  approval_status TEXT NOT NULL CHECK (approval_status IN ('draft', 'awaiting_human_approval', 'approved_for_canary', 'rejected', 'rolled_back', 'promoted')),
+  rollback_target TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+```
+
+### Python API gateway skeleton
+
+```python
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from typing import Annotated
+
+from fastapi import Depends, FastAPI, Header, HTTPException, status
+from pydantic import BaseModel, Field
+
+app = FastAPI(title="ClearGlassInc Artemis Mission API", version="1.0.0")
+
+class AuthContext(BaseModel):
+    subject: str
+    roles: set[str]
+    missions: set[str]
+    compartments: set[str]
+    release_marks: set[str]
+
+class ActionPackageDraft(BaseModel):
+    alert_id: str
+    mission_id: str
+    recommendation: str = Field(min_length=1, max_length=4000)
+    citations: list[str] = Field(min_length=1)
+    confidence: float = Field(ge=0, le=1)
+    operational_significance: str = Field(pattern="^(none|low|high)$")
+
+async def authenticate(authorization: Annotated[str, Header()]) -> AuthContext:
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="missing bearer token")
+    return AuthContext(
+        subject="usr_demo_analyst",
+        roles={"analyst"},
+        missions={"mis_artemis_northstar"},
+        compartments={"REL-CAN-USA"},
+        release_marks={"REL-CAN", "REL-USA"},
+    )
+
+def require_mission(auth: AuthContext, mission_id: str) -> None:
+    if mission_id not in auth.missions:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="mission access denied")
+
+@app.post("/action-packages/draft")
+async def draft_action_package(payload: ActionPackageDraft, auth: AuthContext = Depends(authenticate)) -> dict[str, object]:
+    require_mission(auth, payload.mission_id)
+    if payload.operational_significance == "high" and "mission_commander" not in auth.roles:
+        approval_status = "awaiting_human_approval"
+    else:
+        approval_status = "draft_only"
+    event = {
+        "package_id": f"pkg_{payload.alert_id}",
+        "mission_id": payload.mission_id,
+        "created_by": auth.subject,
+        "approval_status": approval_status,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    # write_case_object(event); append_audit("action_package.drafted", auth.subject, event)
+    return event
+```
+
+### TypeScript mission cockpit contract
+
+```tsx
+type Classification = "UNCLASSIFIED" | "PROTECTED" | "SECRET//REL-CAN-USA" | "TOP_SECRET";
+
+type AlertCard = {
+  alertId: string;
+  missionId: string;
+  severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+  title: string;
+  confidence: number;
+  classification: Classification;
+  reasonCodes: string[];
+  citations: string[];
+  approvalStatus: "not_required" | "awaiting_human_approval" | "approved" | "rejected";
+};
+
+export function AlertReviewCard({ alert, onApprove, onReject }: {
+  alert: AlertCard;
+  onApprove: (alertId: string) => Promise<void>;
+  onReject: (alertId: string, reason: string) => Promise<void>;
+}) {
+  const requiresApproval = alert.approvalStatus === "awaiting_human_approval";
+  return (
+    <article className="rounded-xl border p-4 shadow-sm" data-classification={alert.classification}>
+      <header className="flex items-center justify-between">
+        <h2>{alert.title}</h2>
+        <strong>{alert.severity}</strong>
+      </header>
+      <p>Confidence: {(alert.confidence * 100).toFixed(1)}%</p>
+      <ul>{alert.reasonCodes.map((code) => <li key={code}>{code}</li>)}</ul>
+      <footer className="flex gap-2">
+        <button disabled={!requiresApproval} onClick={() => onApprove(alert.alertId)}>Approve</button>
+        <button disabled={!requiresApproval} onClick={() => onReject(alert.alertId, "operator rejected recommendation")}>Reject</button>
+      </footer>
+    </article>
+  );
+}
+```
+
+### Drift detection and promotion guard
+
+```python
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class MetricWindow:
+    name: str
+    baseline_mean: float
+    baseline_stddev: float
+    current_mean: float
+    min_allowed: float | None = None
+    max_allowed: float | None = None
+
+@dataclass(frozen=True)
+class DriftDecision:
+    allow_promotion: bool
+    reasons: list[str]
+
+def z_score(window: MetricWindow) -> float:
+    denominator = window.baseline_stddev if window.baseline_stddev > 0 else 1e-9
+    return abs(window.current_mean - window.baseline_mean) / denominator
+
+def promotion_guard(windows: list[MetricWindow]) -> DriftDecision:
+    reasons: list[str] = []
+    for window in windows:
+        if z_score(window) >= 3.0:
+            reasons.append(f"{window.name}: distribution drift exceeds 3 sigma")
+        if window.min_allowed is not None and window.current_mean < window.min_allowed:
+            reasons.append(f"{window.name}: below minimum {window.min_allowed}")
+        if window.max_allowed is not None and window.current_mean > window.max_allowed:
+            reasons.append(f"{window.name}: above maximum {window.max_allowed}")
+    return DriftDecision(allow_promotion=not reasons, reasons=reasons)
+```
+
+### Human-approved self-evolution invariant
+
+ClearGlassInc Artemis may optimize prompts, heuristics, retrieval weights, eval suites, and model routing recommendations, but these changes remain proposals until an authorized human approves them. The invariant is simple: agents can recommend a better control surface, evaluations can prove it safer or more accurate, and Apollo can deploy it safely, but no agent can expand its own permissions, remove approval gates, alter mission objectives, or bypass coalition release markings.
