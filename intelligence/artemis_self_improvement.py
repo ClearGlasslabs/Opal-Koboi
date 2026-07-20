@@ -118,6 +118,8 @@ def evaluate_change_proposal(proposal: ChangeProposal) -> ProposalDecision:
         reasons.append("recall regressed beyond 2 percentage points")
     if cand.p95_latency_ms > base.p95_latency_ms * 1.10:
         reasons.append("p95 latency regressed beyond 10 percent")
+    if cand.policy_denial_rate > base.policy_denial_rate + 0.02:
+        reasons.append("policy denial rate regressed beyond 2 percentage points")
     if cand.operator_trust + 0.01 < base.operator_trust:
         reasons.append("operator trust regressed beyond 1 percentage point")
 

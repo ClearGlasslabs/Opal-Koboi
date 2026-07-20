@@ -49,6 +49,14 @@ def test_rejects_unsupported_claim_regression():
     assert "unsupported claim rate regressed" in decision.reasons
 
 
+def test_rejects_policy_denial_regression():
+    decision = evaluate_change_proposal(
+        proposal(candidate_metrics=metrics(precision=0.86, policy_denial_rate=0.061))
+    )
+    assert decision.status == "reject"
+    assert "policy denial rate regressed beyond 2 percentage points" in decision.reasons
+
+
 def test_rejects_high_risk_or_policy_changes():
     decision = evaluate_change_proposal(proposal(change_type="policy", risk_score=0.5))
     assert decision.status == "reject"
