@@ -23,6 +23,7 @@ Enterprise-grade OSINT intelligence platforms, real-time threat dashboards, and 
 This repository now includes a production-oriented architecture blueprint for **ClearGlassInc Artemis**, a self-evolving AI intelligence platform designed around Palantir Gotham, Foundry, AIP, and Apollo. The blueprint covers full-stack web architecture, secure ontology design, agentic AI workflows, safe self-improvement loops, policy-as-code, observability, and Apollo-controlled deployment.
 
 - Read the implementation blueprint: [`artemis-blueprint.md`](./artemis-blueprint.md)
+- Use the production repo audit prompt: [`docs/clearglassinc-artemis-repo-audit-prompt.md`](./docs/clearglassinc-artemis-repo-audit-prompt.md)
 - Read the defense-grade architecture blueprint: [`docs/clearglassinc-artemis-defense-grade-blueprint.md`](./docs/clearglassinc-artemis-defense-grade-blueprint.md)
 - Read the advanced blog/campaign system prompt: [`docs/advanced-campaign-system.md`](./docs/advanced-campaign-system.md)
 - Core guarantees: human-approved self-upgrades, immutable audit trails, mission-scoped authorization, citation-first AI outputs, rollback-safe deployment, and Python-first precision guardrails.
