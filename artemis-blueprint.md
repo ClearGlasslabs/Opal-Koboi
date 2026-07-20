@@ -117,7 +117,7 @@ Every AI tool call uses a signed execution envelope:
 
 1. **Capture:** event-sourced feedback is written to immutable storage and normalized into `FeedbackSignal`.
 2. **Label:** sensitive text is redacted; labels are assigned for precision, recall, latency, trust, and impact.
-3. **Evaluate:** candidate prompts, workflows, and routers run against frozen eval suites and adversarial tests.
+3. **Evaluate:** candidate prompts, workflows, and routers run against frozen eval suites and adversarial tests. A Python fail-closed gate, implemented in `intelligence/artemis_self_improvement.py`, converts only improving low-risk candidates into human-review proposals; it never deploys changes directly.
 4. **Propose:** the Improvement Agent creates a `ChangeProposal` with diffs, metrics, blast radius, and rollback plan.
 5. **Review:** human approvers inspect evidence, eval deltas, and policy impact.
 6. **Canary:** Apollo deploys the approved version to a limited mission cohort.
