@@ -1,40 +1,123 @@
-# 🔮 ClearGlass Inc. - Municipal Cybersecurity Intelligence
+# ClearGlassInc Artemis Browser Intelligence Assistant
 
-Enterprise-grade OSINT intelligence platforms, real-time threat dashboards, and compliance automation — purpose-built for Canadian municipalities.
+ClearGlassInc Artemis is an open-source, lawful defensive browser intelligence and research assistant for security teams that need high-assurance source tracking, AI-assisted synthesis, and audited workflows. It is designed for **browser security**, **AI research automation**, and **cybersecurity workflow automation** without offensive, deceptive, or unauthorized-access features.
 
-## 🚀 Platforms
+![Screenshot placeholder](docs/screenshots/artemis-browser-landing-placeholder.svg)
 
-| Platform | Features |
-|----------|----------|
-| **ARTEMIS IV** | 31 modules, 7 live APIs, unified command dashboard |
-| **NEXUS** | 15 OSINT feeds, 45 MTO cameras, geospatial awareness |
-| **Social Media Suite** | 5 platforms, AI/ML sentiment, PowerShell automation |
+## Use Cases
 
-## 📊 Capabilities
+- Defensive vulnerability and vendor-advisory research with citation-preserving notes.
+- Public-source OSINT collection from HTTPS public websites, government portals, academic pages, public datasets, and vendor advisories.
+- Browser tab investigations where every capture is hashed, timestamped, and linked to analyst notes.
+- AI summarization that rejects uncited claims and preserves evidence snippets for review.
+- Security-team collaboration with role-based permissions, append-only audit logs, and human approval gates.
 
-- OSINT collection (surface/deep/dark web)
-- Social media monitoring & sentiment analysis
-- NIST CSF, PIPEDA, SOC 2, ISO 27001 compliance
-- Keyless deployment - operational in minutes
+## What Is Included
 
+- **Next.js landing app** with a glass/neon premium interface and SEO metadata in `apps/web`.
+- **Python security core** for local-first browser workflow models, public-source validation, RBAC, audit sealing, cited summaries, and encrypted secret envelopes.
+- **Tests and CI** covering the browser assistant primitives and building the web application.
+- **Hardening guidance** for CSP, zero-trust access, local secret handling, auditability, and safe AI usage.
 
-## 🧠 ClearGlassInc Artemis 2040 Architecture
+## Architecture
 
-This repository now includes a production-oriented architecture blueprint for **ClearGlassInc Artemis**, a self-evolving AI intelligence platform designed around Palantir Gotham, Foundry, AIP, and Apollo. The blueprint covers full-stack web architecture, secure ontology design, agentic AI workflows, safe self-improvement loops, policy-as-code, observability, and Apollo-controlled deployment.
+```mermaid
+flowchart LR
+  Browser[Next.js Browser UI] --> LocalDB[(Local encrypted storage)]
+  Browser --> APIGW[FastAPI/API Gateway]
+  APIGW --> Policy[RBAC + Policy Engine]
+  APIGW --> Audit[Append-only Audit Log]
+  APIGW --> OSINT[Public OSINT Ingestion]
+  OSINT --> Sources[(Source Metadata + Hashes)]
+  Sources --> Retrieval[Search/Retrieval]
+  Retrieval --> AI[Citation-first AI Summarizer]
+  AI --> Review[Human Review + Approval]
+```
 
-- Read the implementation blueprint: [`artemis-blueprint.md`](./artemis-blueprint.md)
-- Use the production repo audit prompt: [`docs/clearglassinc-artemis-repo-audit-prompt.md`](./docs/clearglassinc-artemis-repo-audit-prompt.md)
-- Read the defense-grade architecture blueprint: [`docs/clearglassinc-artemis-defense-grade-blueprint.md`](./docs/clearglassinc-artemis-defense-grade-blueprint.md)
-- Read the advanced blog/campaign system prompt: [`docs/advanced-campaign-system.md`](./docs/advanced-campaign-system.md)
-- Core guarantees: human-approved self-upgrades, immutable audit trails, mission-scoped authorization, citation-first AI outputs, rollback-safe deployment, and Python-first precision guardrails.
-- Deployment execution guard: `intelligence/artemis_deploy_execute.py` converts an approved self-improvement proposal into an Apollo-style verify/canary/observe/rollback plan without mutating production state.
-- Mission policy guard: `intelligence/artemis_policy.py` enforces mission-scoped, coalition-aware, compartment-sensitive approval gates before AI tools can read, write, export, or recommend action.
-- Current platform audit: [`docs/clearglassinc-artemis-platform-audit-2026.md`](./docs/clearglassinc-artemis-platform-audit-2026.md) ranks the highest-value upgrades and rollout sequence for ClearGlassInc Artemis.
-- New field-operations pattern: enumeration workload planning is route/support automation only; resident contact, interviews, verification, and official submissions remain human-controlled.
+### Secure Browser Workflow
 
-## 🌐 Live Site
+1. Open mission-scoped research tabs.
+2. Capture only public HTTPS sources.
+3. Store source metadata, short excerpts, timestamps, and SHA-256 content hashes.
+4. Attach notes to source URLs.
+5. Generate AI summaries only when every sentence has citations.
+6. Seal every read/write/capture/secret action into an audit event.
 
-[https://clearglasslabs.github.io/Opal-Koboi/](https://clearglasslabs.github.io/Opal-Koboi/)
+### Data Model Highlights
+
+- `ResearchSource`: public HTTPS URL, source title, source kind, capture timestamp, content hash, license note.
+- `BrowserTab`: tab ID, active URL, title, attached source records.
+- `ResearchNote`: note body, source URLs, author, timestamp.
+- `AISummary`: summary text plus citation list; validation enforces citations for every claim.
+- `AuditEvent`: actor, action, target, allow/deny reason, timestamp, tamper-evident hash.
+- `LocalFirstVault`: encrypted envelope interface for local secrets with authenticated ciphertext.
+
+## Threat Model
+
+| Asset | Threat | Control |
+| --- | --- | --- |
+| Analyst notes | Unauthorized reads/writes | RBAC, mission scoping, local encryption |
+| Secrets | Token leakage | Encrypted envelopes, no plaintext persistence, KMS/keychain-ready interface |
+| Source integrity | Tampered evidence | SHA-256 hashes, timestamps, source URLs, append-only audit |
+| AI output | Hallucinated claims | Citation-per-claim validation and human review |
+| Browser UI | XSS/clickjacking | CSP, `X-Frame-Options: DENY`, `nosniff`, restricted permissions policy |
+| Governance | Unapproved consequential actions | Approval gates, audit logs, policy-as-code |
+
+## Security and Governance
+
+- Public-source-only ingestion; private/local URLs are rejected by validation.
+- No exploit modules, credential collection, phishing, persistence, evasion, scanning, or unauthorized access logic.
+- Least-privilege roles: viewer, researcher, auditor, and admin.
+- Human approval gates for operationally significant actions.
+- Immutable audit hashes for accountability and non-repudiation.
+- Recommended production secret backend: OS keychain, WebCrypto, KMS/HSM-wrapped keys, or libsodium.
+
+## Setup
+
+### Python core
+
+```bash
+python -m pip install -e '.[dev]'
+pytest tests/test_browser_research_assistant.py
+```
+
+### Next.js web app
+
+```bash
+cd apps/web
+npm install
+npm run dev
+```
+
+### Production build
+
+```bash
+cd apps/web
+npm run build
+```
+
+## CI
+
+GitHub Actions run Python tests and the Next.js production build in `.github/workflows/browser-intelligence-ci.yml`.
+
+## Screenshots
+
+The landing page is implemented in `apps/web/app/page.tsx`. Add real screenshots under `docs/screenshots/` after deploying or running the app locally.
+
+## Roadmap
+
+- Browser extension companion with WebCrypto-backed IndexedDB storage.
+- Pluggable public-source connectors for CVE, CISA KEV, NVD, vendor advisories, and public RSS feeds.
+- Signed append-only audit log export.
+- OPA/Rego policy-as-code integration.
+- Offline embedding index for local retrieval.
+- Evals dashboard for citation coverage, precision, recall, latency, and analyst trust.
+- Optional enterprise SSO and SCIM provisioning.
+
+## ClearGlassInc Artemis 2040 Architecture
+
+For the broader self-evolving intelligence platform design using Palantir Gotham, Foundry, AIP, and Apollo, see [`artemis-blueprint.md`](./artemis-blueprint.md) and the architecture documents in [`docs/`](./docs/).
 
 ---
-© 2026 ClearGlass Inc.
+
+© 2026 ClearGlass Inc. Defensive research use only.
