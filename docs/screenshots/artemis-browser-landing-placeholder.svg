@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-label="ClearGlassInc Artemis browser intelligence landing page placeholder">
+  <defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#76f7ff"/><stop offset="1" stop-color="#ff4fd8"/></linearGradient></defs>
+  <rect width="1200" height="675" fill="#050812"/>
+  <circle cx="220" cy="90" r="280" fill="#12346b" opacity=".65"/>
+  <circle cx="920" cy="40" r="250" fill="#5a1454" opacity=".7"/>
+  <rect x="90" y="90" width="1020" height="495" rx="34" fill="rgba(255,255,255,.08)" stroke="#76f7ff" stroke-opacity=".45"/>
+  <text x="135" y="185" fill="#76f7ff" font-family="Arial" font-size="22" font-weight="700">DEFENSIVE BROWSER INTELLIGENCE</text>
+  <text x="135" y="285" fill="#eef7ff" font-family="Arial" font-size="62" font-weight="800">ClearGlassInc Artemis</text>
+  <text x="135" y="350" fill="#a8b3c8" font-family="Arial" font-size="30">Cited AI research automation with secure tabs, notes, capture, and audit logs.</text>
+  <rect x="135" y="430" width="230" height="58" rx="29" fill="url(#g)"/>
+  <text x="171" y="468" fill="#031016" font-family="Arial" font-size="22" font-weight="800">View Architecture</text>
+</svg>
