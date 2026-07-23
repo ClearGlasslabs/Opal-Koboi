@@ -1,8 +1,8 @@
-const navigation = ['Vision', 'Services', 'Products⌄', 'Government', 'Insights', 'Contact']
+const navigation = ['Vision', 'Services', 'Products ▾', 'Government', 'Insights', 'Contact']
 
 function ClearGlassSeal() {
   return (
-    <svg className="seal" viewBox="0 0 200 200" role="img" aria-label="ClearGlassInc transparent glass presidential-style seal">
+    <svg className="seal" viewBox="0 0 200 200" role="img" aria-label="FED SASE silver eagle seal embedded in crystalline glass">
       <defs>
         <radialGradient id="sealCrystal" cx="50%" cy="36%" r="70%">
           <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
@@ -26,8 +26,8 @@ function ClearGlassSeal() {
       <circle cx="100" cy="100" r="96" fill="rgba(255,255,255,0.08)" stroke="url(#sealChrome)" strokeWidth="4" />
       <circle cx="100" cy="100" r="82" fill="url(#sealCrystal)" stroke="rgba(255,255,255,0.75)" strokeWidth="1.6" filter="url(#sealDepth)" />
       <circle cx="100" cy="100" r="68" fill="rgba(10,26,52,0.1)" stroke="rgba(190,235,255,0.5)" strokeWidth="1" />
-      <text className="sealText"><textPath href="#topArc" startOffset="50%" textAnchor="middle">CLEARGLASSINC</textPath></text>
-      <text className="sealText sealTextSmall"><textPath href="#bottomArc" startOffset="50%" textAnchor="middle">ARTEMIS 2040</textPath></text>
+      <text className="sealText"><textPath href="#topArc" startOffset="50%" textAnchor="middle">FED SASE</textPath></text>
+      <text className="sealText sealTextSmall"><textPath href="#bottomArc" startOffset="50%" textAnchor="middle">SECURE ACCESS</textPath></text>
       {Array.from({ length: 12 }).map((_, i) => {
         const a = (i * 30 - 90) * Math.PI / 180
         const x = 100 + Math.cos(a) * 74
@@ -57,7 +57,7 @@ export default function Page() {
             <a className="brand" href="#vision" aria-label="ClearGlassInc 2040 home"><span>ClearGlassInc.</span><em>2040</em></a>
           </div>
           <div className="navLinks">
-            {navigation.map((item) => <a href={`#${item.toLowerCase().replace('⌄', '')}`} key={item}>{item}</a>)}
+            {navigation.map((item) => <a href={`#${item.toLowerCase().replace(' ▾', '')}`} key={item}>{item}</a>)}
           </div>
           <a className="cta" href="#engagement"><span className="shieldIcon" aria-hidden="true" />Book a Security Engagement</a>
         </nav>
