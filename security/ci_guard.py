@@ -175,19 +175,41 @@ def scan_workflow(path: Path, policy: dict) -> list[Finding]:
                 )
             )
 
-    checkout_blocks = re.finditer(
-        r"(?ms)^\s*-\s+name:.*?\n(?=\s*-\s+name:|\s{0,4}[A-Za-z0-9_-]+:|\Z)",
-        text,
-    )
-    for block_match in checkout_blocks:
-        block = block_match.group(0)
-        if "actions/checkout@" in block and "persist-credentials: false" not in block:
+    lines = text.splitlines(keepends=True)
+    line_offsets: list[int] = []
+    offset = 0
+    for line in lines:
+        line_offsets.append(offset)
+        offset += len(line)
+
+    for index, line in enumerate(lines):
+        if not re.match(r"^\s*(?:-\s+)?uses:\s*actions/checkout@", line):
+            continue
+
+        step_start = index
+        while step_start >= 0 and not re.match(r"^(?P<indent>\s*)-\s+", lines[step_start]):
+            step_start -= 1
+        if step_start < 0:
+            continue
+
+        indent_match = re.match(r"^(?P<indent>\s*)-\s+", lines[step_start])
+        assert indent_match is not None
+        step_indent = len(indent_match.group("indent"))
+        step_end = step_start + 1
+        while step_end < len(lines):
+            candidate = re.match(r"^(?P<indent>\s*)-\s+", lines[step_end])
+            if candidate and len(candidate.group("indent")) == step_indent:
+                break
+            step_end += 1
+
+        block = "".join(lines[step_start:step_end])
+        if "persist-credentials: false" not in block:
             findings.append(
                 Finding(
                     "CG-ACT-007",
                     "medium",
                     relative,
-                    line_number(text, block_match.start()),
+                    line_number(text, line_offsets[step_start]),
                     "`actions/checkout` leaves the workflow token available to later steps.",
                     "Set `persist-credentials: false` unless a reviewed step must push with that token.",
                 )
