@@ -3,6 +3,7 @@ from pydantic import ValidationError
 
 from intelligence.browser_research_assistant import (
     BrowserAction,
+    BrowserResearchWorkspace,
     BrowserRole,
     LocalFirstVault,
     ResearchSource,
@@ -36,3 +37,39 @@ def test_browser_rbac_audit_events_are_sealed():
     event = authorize_browser_action(BrowserRole.VIEWER, BrowserAction.MANAGE_SECRETS, "usr_1", "vault")
     assert not event.allowed
     assert event.event_hash
+
+
+def test_workspace_tracks_tabs_sources_notes_and_audit():
+    workspace = BrowserResearchWorkspace(mission_id="mission_vendor_patch")
+    tab = workspace.open_tab(role=BrowserRole.RESEARCHER, actor_id="analyst_1", url="https://example.gov", title="Advisory")
+    source = workspace.capture_source(
+        role=BrowserRole.RESEARCHER,
+        actor_id="analyst_1",
+        tab_id=tab.tab_id,
+        url="https://example.gov/advisory",
+        title="Patch advisory",
+        content="patch available",
+    )
+    note = workspace.add_note(
+        role=BrowserRole.RESEARCHER,
+        actor_id="analyst_1",
+        body="Patch source captured for defensive triage.",
+        source_urls=[str(source.url)],
+    )
+    assert workspace.source_ledger()[0].content_sha256 == source_hash("patch available")
+    assert note.created_by == "analyst_1"
+    assert len(workspace.audit_events) == 3
+
+
+def test_workspace_denies_unprivileged_capture():
+    workspace = BrowserResearchWorkspace(mission_id="mission_denied")
+    tab = workspace.open_tab(role=BrowserRole.VIEWER, actor_id="viewer_1", url="https://example.org", title="Read only")
+    with pytest.raises(PermissionError):
+        workspace.capture_source(
+            role=BrowserRole.VIEWER,
+            actor_id="viewer_1",
+            tab_id=tab.tab_id,
+            url="https://example.org/report",
+            title="Report",
+            content="public report",
+        )
