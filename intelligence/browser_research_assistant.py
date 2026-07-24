@@ -190,5 +190,55 @@ def build_cited_summary(claims: Iterable[tuple[str, ResearchSource, str]]) -> AI
     return AISummary(summary=" ".join(sentences), citations=citations)
 
 
+class BrowserResearchWorkspace(StrictModel):
+    """Mission-scoped local-first browser workspace for tabs, captures, notes, and audit."""
+
+    mission_id: str = Field(min_length=1)
+    tabs: list[BrowserTab] = Field(default_factory=list)
+    notes: list[ResearchNote] = Field(default_factory=list)
+    audit_events: list[AuditEvent] = Field(default_factory=list)
+
+    def _record(self, role: BrowserRole, action: BrowserAction, actor_id: str, target: str) -> AuditEvent:
+        event = authorize_browser_action(role, action, actor_id, target)
+        self.audit_events.append(event)
+        if not event.allowed:
+            raise PermissionError(event.reason)
+        return event
+
+    def open_tab(self, *, role: BrowserRole, actor_id: str, url: str, title: str) -> BrowserTab:
+        self._record(role, BrowserAction.READ, actor_id, url)
+        tab = BrowserTab(tab_id=new_id("tab"), url=url, title=title)
+        self.tabs.append(tab)
+        return tab
+
+    def capture_source(
+        self,
+        *,
+        role: BrowserRole,
+        actor_id: str,
+        tab_id: str,
+        url: str,
+        title: str,
+        content: str,
+        kind: SourceKind = SourceKind.PUBLIC_WEB,
+    ) -> ResearchSource:
+        self._record(role, BrowserAction.CAPTURE_SOURCE, actor_id, url)
+        source = ResearchSource(url=url, title=title, kind=kind, content_sha256=source_hash(content))
+        for index, tab in enumerate(self.tabs):
+            if tab.tab_id == tab_id:
+                self.tabs[index] = tab.model_copy(update={"sources": [*tab.sources, source]})
+                return source
+        raise ValueError(f"unknown tab_id: {tab_id}")
+
+    def add_note(self, *, role: BrowserRole, actor_id: str, body: str, source_urls: list[str]) -> ResearchNote:
+        self._record(role, BrowserAction.WRITE_NOTE, actor_id, self.mission_id)
+        note = ResearchNote(note_id=new_id("note"), body=body, source_urls=source_urls, created_by=actor_id)
+        self.notes.append(note)
+        return note
+
+    def source_ledger(self) -> list[ResearchSource]:
+        return [source for tab in self.tabs for source in tab.sources]
+
+
 def new_id(prefix: str) -> str:
     return f"{prefix}_{secrets.token_urlsafe(12)}"
