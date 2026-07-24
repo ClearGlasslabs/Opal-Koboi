@@ -65,6 +65,10 @@ ClearGlassInc Artemis is a secure, coalition-aware, latency-sensitive intelligen
 - Temporal state is first-class: historical truth, current belief, and projected risk are distinct.
 - Coalition sharing uses explicit release markings rather than implicit role membership.
 
+### Executable reference implementation
+
+`intelligence/artemis_ontology.py` turns these rules into strict Pydantic contracts and a storage-agnostic query adapter. It models evidence hashes and observation/ingestion time, half-open temporal validity windows, confidence, mission membership, classification, compartments, and coalition release markings. The adapter authorizes records before applying text filters, preventing search probes from revealing inaccessible entity names, and returns only relationships whose endpoints and edge markings are all visible. Every result carries a deterministic query hash suitable for the immutable audit envelope. In production, replace the in-memory indexes with Foundry Ontology reads while preserving the same authorization boundary and response contract.
+
 ## AI and Agent Design
 
 ### Copilots
