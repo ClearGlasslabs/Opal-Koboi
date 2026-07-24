@@ -1,75 +1,78 @@
-const navigation = ['Vision', 'Services', 'Products ▾', 'Government', 'Insights', 'Contact']
+const metrics = [
+  ['100%', 'cited AI claims'],
+  ['0', 'private-source ingestion paths'],
+  ['4', 'least-privilege roles'],
+  ['<60 ms', 'local evidence search target']
+]
 
-function ClearGlassSeal() {
-  return (
-    <svg className="seal" viewBox="0 0 200 200" role="img" aria-label="FED SASE silver eagle seal embedded in crystalline glass">
-      <defs>
-        <radialGradient id="sealCrystal" cx="50%" cy="36%" r="70%">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-          <stop offset="42%" stopColor="#dff8ff" stopOpacity="0.52" />
-          <stop offset="76%" stopColor="#8ca5bb" stopOpacity="0.26" />
-          <stop offset="100%" stopColor="#ffffff" stopOpacity="0.08" />
-        </radialGradient>
-        <linearGradient id="sealChrome" x1="18" x2="182" y1="18" y2="182">
-          <stop stopColor="#ffffff" />
-          <stop offset="0.3" stopColor="#93a8bd" />
-          <stop offset="0.55" stopColor="#f7fbff" />
-          <stop offset="1" stopColor="#64758e" />
-        </linearGradient>
-        <filter id="sealDepth" x="-25%" y="-25%" width="150%" height="150%">
-          <feDropShadow dx="0" dy="7" stdDeviation="6" floodColor="#020712" floodOpacity="0.38" />
-          <feDropShadow dx="0" dy="0" stdDeviation="5" floodColor="#b8f6ff" floodOpacity="0.38" />
-        </filter>
-        <path id="topArc" d="M 42 104 A 58 58 0 0 1 158 104" />
-        <path id="bottomArc" d="M 158 102 A 58 58 0 0 1 42 102" />
-      </defs>
-      <circle cx="100" cy="100" r="96" fill="rgba(255,255,255,0.08)" stroke="url(#sealChrome)" strokeWidth="4" />
-      <circle cx="100" cy="100" r="82" fill="url(#sealCrystal)" stroke="rgba(255,255,255,0.75)" strokeWidth="1.6" filter="url(#sealDepth)" />
-      <circle cx="100" cy="100" r="68" fill="rgba(10,26,52,0.1)" stroke="rgba(190,235,255,0.5)" strokeWidth="1" />
-      <text className="sealText"><textPath href="#topArc" startOffset="50%" textAnchor="middle">FED SASE</textPath></text>
-      <text className="sealText sealTextSmall"><textPath href="#bottomArc" startOffset="50%" textAnchor="middle">SECURE ACCESS</textPath></text>
-      {Array.from({ length: 12 }).map((_, i) => {
-        const a = (i * 30 - 90) * Math.PI / 180
-        const x = 100 + Math.cos(a) * 74
-        const y = 100 + Math.sin(a) * 74
-        return <path key={i} d={`M ${x} ${y - 4} L ${x + 1.3} ${y - 1.1} L ${x + 4.5} ${y - 1.1} L ${x + 1.8} ${y + .8} L ${x + 2.8} ${y + 4} L ${x} ${y + 2.1} L ${x - 2.8} ${y + 4} L ${x - 1.8} ${y + .8} L ${x - 4.5} ${y - 1.1} L ${x - 1.3} ${y - 1.1} Z`} fill="#f8fdff" opacity="0.86" />
-      })}
-      <g className="eagle" fill="none" stroke="url(#sealChrome)" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M52 91 C70 77 83 77 97 91 C111 77 130 76 149 91 C128 92 116 101 104 114 C91 101 75 92 52 91Z" strokeWidth="5" />
-        <path d="M100 72 C107 81 108 94 100 105 C92 94 93 81 100 72Z" strokeWidth="4" fill="rgba(255,255,255,0.18)" />
-        <path d="M100 70 L112 58 L107 77" strokeWidth="3.5" />
-        <path d="M88 119 L112 119 L108 146 L92 146Z" strokeWidth="4" fill="rgba(8,24,50,0.18)" />
-        <path d="M96 122 L96 143 M104 122 L104 143 M90 131 L110 131" strokeWidth="1.8" opacity="0.75" />
-        <path d="M76 116 C65 127 61 137 58 149 M124 116 C135 127 139 137 142 149" strokeWidth="3" />
-      </g>
-      <path d="M45 49 C72 23 128 23 155 49" fill="none" stroke="rgba(255,255,255,0.52)" strokeWidth="2" />
-    </svg>
-  )
-}
+const workflow = [
+  'Mission-scoped tabs with source ledgers',
+  'HTTPS public-source capture with SHA-256 evidence hashes',
+  'Encrypted local-first vault envelopes for tokens and notes',
+  'Citation-gated AI synthesis with human review queues',
+  'Append-only audit events for every consequential action'
+]
+
+const architecture = [
+  ['Browser Console', 'Tabs, captures, notebook, source cards, and AI review lanes run in a hardened Next.js shell.'],
+  ['Local Evidence Store', 'IndexedDB/SQLite-ready schema keeps notes, excerpts, hashes, and encrypted envelopes local by default.'],
+  ['Policy Gateway', 'RBAC, mission labels, public-source validation, rate limits, and approval gates protect every workflow.'],
+  ['AI Citation Engine', 'Retrieval-first summarization refuses unsupported claims and emits source-level provenance.']
+]
+
+const roadmap = ['Browser extension companion', 'OPA/Rego policy packs', 'Offline vector index', 'Signed audit export', 'SSO/SCIM enterprise mode']
 
 export default function Page() {
   return (
-    <main className="mockup" aria-label="ClearGlassInc 2040 website header mockup">
-      <section className="composition">
-        <nav className="commandBar" aria-label="Primary navigation">
-          <div className="brandCluster">
-            <div className="holoHousing"><ClearGlassSeal /></div>
-            <a className="brand" href="#vision" aria-label="ClearGlassInc 2040 home"><span>ClearGlassInc.</span><em>2040</em></a>
+    <main className="shell">
+      <nav className="nav" aria-label="Primary navigation">
+        <a className="brand" href="#top"><span className="orb" />ClearGlassInc Artemis</a>
+        <div className="links">
+          <a href="#workflow">Workflow</a><a href="#architecture">Architecture</a><a href="#security">Security</a><a href="#roadmap">Roadmap</a>
+        </div>
+        <a className="navCta" href="#setup">Deploy locally</a>
+      </nav>
+
+      <section id="top" className="hero">
+        <div className="heroCopy">
+          <p className="eyebrow">Open-source defensive browser intelligence</p>
+          <h1>Research faster without losing source integrity, auditability, or control.</h1>
+          <p className="lede">A production-ready blueprint for lawful OSINT collection, browser-security research, AI summarization with citations, encrypted local-first storage, and role-based governance.</p>
+          <div className="actions"><a href="#setup">Start the secure workflow</a><a href="#threat-model">Read threat model</a></div>
+        </div>
+        <div className="glassPanel" aria-label="Browser intelligence product preview">
+          <div className="panelTop"><span /> <strong>Mission: Vendor advisory triage</strong><em>audited</em></div>
+          <div className="browserGrid">
+            <aside>
+              <b>Tabs</b>
+              {['CISA KEV', 'Vendor PSIRT', 'NVD CVE', 'Research note'].map((tab, index) => <p key={tab} className={index === 1 ? 'active' : ''}>{tab}</p>)}
+            </aside>
+            <section>
+              <div className="sourceCard"><small>PUBLIC HTTPS SOURCE</small><h3>Vendor confirms patched issue</h3><p>Hash: 2f8c…b91a · Captured 2026-07-24T00:00Z · Citation ready</p></div>
+              <div className="summaryCard"><small>AI SUMMARY POLICY</small><p>Every claim below requires a mapped citation before export.</p><ul><li>Patch is available. <sup>[1]</sup></li><li>Impact is limited to affected versions. <sup>[2]</sup></li></ul></div>
+            </section>
           </div>
-          <div className="navLinks">
-            {navigation.map((item) => <a href={`#${item.toLowerCase().replace(' ▾', '')}`} key={item}>{item}</a>)}
-          </div>
-          <a className="cta" href="#engagement"><span className="shieldIcon" aria-hidden="true" />Book a Security Engagement</a>
-        </nav>
-        <section className="cityHero" aria-label="Futuristic enterprise city hero image">
-          <div className="skyGrid" />
-          <div className="moon" />
-          <div className="aerial aerialOne" />
-          <div className="aerial aerialTwo" />
-          <div className="tower towerOne" /><div className="tower towerTwo" /><div className="tower towerThree" /><div className="tower towerFour" /><div className="tower towerFive" />
-          <div className="haze" />
-        </section>
+        </div>
       </section>
+
+      <section className="metrics">{metrics.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}</section>
+
+      <section id="workflow" className="section twoCol"><div><p className="eyebrow">Secure browser workflow</p><h2>Tabs, notes, captures, and source tracking built for evidence discipline.</h2><p>Artemis rejects private/local URLs, stores short excerpts and hashes instead of bulk copyrighted copies, and binds notes to mission context and immutable audit events.</p></div><ol className="steps">{workflow.map((item) => <li key={item}>{item}</li>)}</ol></section>
+
+      <section id="architecture" className="section"><p className="eyebrow">Full-stack architecture</p><h2>Next.js UI, Python policy core, retrieval-first AI, and hardened operations.</h2><div className="cards">{architecture.map(([title, body]) => <article key={title}><h3>{title}</h3><p>{body}</p></article>)}</div></section>
+
+      <section id="security" className="section twoCol"><div><p className="eyebrow">Security and governance</p><h2>Defensive use only, with explicit human control.</h2></div><div className="matrix"><p><b>RBAC:</b> viewer, researcher, auditor, admin permissions.</p><p><b>Audit:</b> sealed events for reads, writes, captures, and vault actions.</p><p><b>Secrets:</b> encrypted envelopes with authenticated ciphertext and keychain/KMS upgrade path.</p><p><b>AI safety:</b> citation-per-claim validation, no offensive modules, human approval gates.</p></div></section>
+
+      <section id="threat-model" className="section threat"><h2>Threat model highlights</h2><p>Controls prioritize XSS hardening, source tamper detection, unauthorized note access prevention, hallucination resistance, and non-repudiation for sensitive security research workflows.</p></section>
+
+      <section id="setup" className="section setup"><h2>Local setup</h2><pre><code>{`python -m pip install -e '.[dev]'
+pytest tests/test_browser_research_assistant.py
+
+cd apps/web
+npm install
+npm run build`}</code></pre></section>
+
+      <section id="roadmap" className="section"><p className="eyebrow">Roadmap</p><div className="chips">{roadmap.map((item) => <span key={item}>{item}</span>)}</div></section>
     </main>
   )
 }
