@@ -9,6 +9,7 @@ from intelligence.artemis_self_improvement import (
     SignalType,
     detect_metric_drift,
     evaluate_change_proposal,
+    generate_feedback_eval_dataset,
     summarize_feedback_readiness,
 )
 
@@ -116,6 +117,61 @@ def test_feedback_readiness_blocks_sparse_or_overfit_signals():
     assert report.ready_for_eval_generation is False
     assert "requires at least 25 mission-scoped feedback signals" in report.blockers
     assert "requires at least 10 unique targets to avoid overfitting" in report.blockers
+
+
+def test_generates_deterministic_mission_scoped_eval_dataset():
+    signals = [
+        FeedbackSignal(
+            signal_id=f"north-{index:02d}",
+            signal_type=SignalType.OPERATOR_CORRECTION if index % 3 == 0 else SignalType.ALERT_OUTCOME,
+            target_id=f"alert-{index % 12:02d}",
+            mission_id="mis_northstar",
+            operator_id="operator-sensitive",
+            correction="lower severity" if index % 3 == 0 else None,
+            outcome="false_positive" if index % 5 == 0 else "true_positive",
+            metadata={"private_note": "must not enter eval artifact"},
+        )
+        for index in range(25)
+    ]
+    signals.append(
+        FeedbackSignal(
+            signal_id="other-mission",
+            signal_type=SignalType.ALERT_OUTCOME,
+            target_id="foreign-alert",
+            mission_id="mis_elsewhere",
+            outcome="false_positive",
+        )
+    )
+
+    first = generate_feedback_eval_dataset(signals, mission_id="mis_northstar", version="feedback-v1")
+    second = generate_feedback_eval_dataset(list(reversed(signals)), mission_id="mis_northstar", version="feedback-v1")
+
+    assert first.dataset_id == second.dataset_id
+    assert first.manifest_hash == second.manifest_hash
+    assert first.source_signal_count == 25
+    assert len(first.cases) == 12
+    assert sum(case.partition == "holdout" for case in first.cases) == 2
+    assert all(case.target_id != "foreign-alert" for case in first.cases)
+    serialized = first.model_dump_json()
+    assert "operator-sensitive" not in serialized
+    assert "private_note" not in serialized
+
+
+def test_eval_generation_rejects_unready_feedback_and_invalid_partition():
+    sparse = [
+        FeedbackSignal(
+            signal_id="sig-1",
+            signal_type=SignalType.ALERT_OUTCOME,
+            target_id="alert-1",
+            mission_id="mis_northstar",
+            outcome="false_positive",
+        )
+    ]
+
+    with pytest.raises(ValueError, match="feedback is not ready"):
+        generate_feedback_eval_dataset(sparse, mission_id="mis_northstar", version="feedback-v1")
+    with pytest.raises(ValueError, match="holdout_fraction"):
+        generate_feedback_eval_dataset(sparse, mission_id="mis_northstar", version="feedback-v1", holdout_fraction=0.9)
 
 
 def test_detect_metric_drift_creates_reviewable_alerts():

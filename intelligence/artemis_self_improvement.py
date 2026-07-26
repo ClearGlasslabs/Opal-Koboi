@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+from collections import defaultdict
 from datetime import datetime, timezone
 from enum import StrEnum
 from typing import Any, Literal
@@ -120,6 +121,35 @@ class DriftAlert(StrictModel):
     reason: str
 
 
+class EvalPartition(StrEnum):
+    DEVELOPMENT = "development"
+    HOLDOUT = "holdout"
+
+
+class FeedbackEvalCase(StrictModel):
+    """De-identified, target-level case derived from mission feedback."""
+
+    case_id: str = Field(pattern=r"^eval_[0-9a-f]{16}$")
+    target_id: str = Field(min_length=1)
+    partition: EvalPartition
+    signal_types: tuple[SignalType, ...] = Field(min_length=1)
+    expected_outcomes: tuple[str, ...] = Field(min_length=1)
+    corrections: tuple[str, ...] = ()
+    source_signal_ids: tuple[str, ...] = Field(min_length=1)
+
+
+class FeedbackEvalDataset(StrictModel):
+    """Immutable manifest for a reproducible, mission-scoped evaluation set."""
+
+    dataset_id: str = Field(pattern=r"^evalset_[0-9a-f]{16}$")
+    mission_id: str = Field(min_length=1)
+    version: str = Field(min_length=1)
+    cases: tuple[FeedbackEvalCase, ...] = Field(min_length=1)
+    source_signal_count: int = Field(ge=1)
+    manifest_hash: str = Field(pattern=r"^sha256:[0-9a-f]{64}$")
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
 def summarize_feedback_readiness(
     signals: list[FeedbackSignal],
     *,
@@ -160,6 +190,76 @@ def summarize_feedback_readiness(
         correction_count=correction_count,
         ready_for_eval_generation=not blockers,
         blockers=blockers,
+    )
+
+
+def generate_feedback_eval_dataset(
+    signals: list[FeedbackSignal],
+    *,
+    mission_id: str,
+    version: str,
+    holdout_fraction: float = 0.2,
+) -> FeedbackEvalDataset:
+    """Build a deterministic eval manifest after the feedback quality gate passes.
+
+    Signals are grouped by target to prevent repeated feedback from producing
+    duplicate cases. Operator identities and arbitrary metadata are deliberately
+    excluded. Partition assignment is hash-based and then cardinality-bounded so
+    identical inputs always produce the same non-empty holdout set.
+    """
+
+    if not 0.1 <= holdout_fraction <= 0.5:
+        raise ValueError("holdout_fraction must be between 0.1 and 0.5")
+    readiness = summarize_feedback_readiness(signals, mission_id=mission_id)
+    if not readiness.ready_for_eval_generation:
+        raise ValueError(f"feedback is not ready for eval generation: {'; '.join(readiness.blockers)}")
+
+    mission_signals = sorted(
+        (signal for signal in signals if signal.mission_id == mission_id),
+        key=lambda signal: (signal.target_id, signal.signal_id),
+    )
+    grouped: dict[str, list[FeedbackSignal]] = defaultdict(list)
+    for signal in mission_signals:
+        grouped[signal.target_id].append(signal)
+
+    ranked_targets = sorted(
+        grouped,
+        key=lambda target_id: hashlib.sha256(f"{mission_id}:{version}:{target_id}".encode()).hexdigest(),
+    )
+    holdout_count = max(1, round(len(ranked_targets) * holdout_fraction))
+    holdout_targets = set(ranked_targets[:holdout_count])
+    cases: list[FeedbackEvalCase] = []
+    for target_id in sorted(grouped):
+        target_signals = grouped[target_id]
+        case_digest = hashlib.sha256(f"{mission_id}:{version}:{target_id}".encode()).hexdigest()
+        cases.append(
+            FeedbackEvalCase(
+                case_id=f"eval_{case_digest[:16]}",
+                target_id=target_id,
+                partition=EvalPartition.HOLDOUT if target_id in holdout_targets else EvalPartition.DEVELOPMENT,
+                signal_types=tuple(sorted({signal.signal_type for signal in target_signals}, key=str)),
+                expected_outcomes=tuple(sorted({signal.outcome for signal in target_signals})),
+                corrections=tuple(sorted({signal.correction for signal in target_signals if signal.correction})),
+                source_signal_ids=tuple(signal.signal_id for signal in target_signals),
+            )
+        )
+
+    manifest = {
+        "mission_id": mission_id,
+        "version": version,
+        "source_signal_count": len(mission_signals),
+        "cases": [case.model_dump(mode="json") for case in cases],
+    }
+    digest = hashlib.sha256(
+        json.dumps(manifest, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+    ).hexdigest()
+    return FeedbackEvalDataset(
+        dataset_id=f"evalset_{digest[:16]}",
+        mission_id=mission_id,
+        version=version,
+        cases=tuple(cases),
+        source_signal_count=len(mission_signals),
+        manifest_hash=f"sha256:{digest}",
     )
 
 
