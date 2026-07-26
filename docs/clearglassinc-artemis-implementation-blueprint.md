@@ -261,7 +261,7 @@ Artemis improves itself by proposing changes to prompts, workflows, heuristics, 
 
 1. **Capture** operator corrections, accepted/rejected recommendations, query logs, alert outcomes, mission results, latency, policy denials, citation defects, and trust ratings.
 2. **Normalize** signals into typed `FeedbackSignal` records with redaction, lineage, mission scope, and target artifact references.
-3. **Generate eval cases** containing input context, expected output, policy constraints, labels, and known failure modes.
+3. **Generate eval cases** containing input context, expected output, policy constraints, labels, and known failure modes. The executable reference groups repeated signals by target, removes operator identity and arbitrary metadata, rejects sparse inputs, and assigns a deterministic 10–50% holdout partition through `generate_feedback_eval_dataset`.
 4. **Run frozen regression suites** against current and candidate prompt/workflow/router versions.
 5. **Generate proposal** with diff, rationale, eval deltas, known risks, policy impact, blast radius, and rollback target.
 6. **Review** by mission owner, security owner, model governance owner, and data owner where applicable.
@@ -526,6 +526,8 @@ deny_reason := "cross-coalition release requires explicit release authority" if 
 ```
 
 ### Eval pipeline
+
+Before the shadow suite runs, `intelligence.artemis_self_improvement.generate_feedback_eval_dataset` creates a mission-scoped, content-addressed manifest. Its stable `manifest_hash` is the provenance link recorded with the resulting eval report; generating a dataset does not authorize a prompt, workflow, router, or policy change.
 
 ```python
 from statistics import mean
