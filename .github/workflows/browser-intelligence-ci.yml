@@ -1,23 +1,80 @@
 name: Browser Intelligence CI
+
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+    paths:
+      - "apps/web/**"
+      - "intelligence/browser_research_assistant.py"
+      - "tests/test_browser_research_assistant.py"
+      - "pyproject.toml"
+      - ".github/workflows/browser-intelligence-ci.yml"
   pull_request:
+    paths:
+      - "apps/web/**"
+      - "intelligence/browser_research_assistant.py"
+      - "tests/test_browser_research_assistant.py"
+      - "pyproject.toml"
+      - ".github/workflows/browser-intelligence-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-intelligence-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   python-tests:
-    runs-on: ubuntu-latest
+    name: Browser assistant tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: '3.11' }
-      - run: python -m pip install -e '.[dev]'
-      - run: pytest tests/test_browser_research_assistant.py
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install test dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -e ".[dev]"
+
+      - name: Run browser assistant tests
+        run: python -m pytest -q tests/test_browser_research_assistant.py
+
   web-build:
-    runs-on: ubuntu-latest
-    defaults: { run: { working-directory: apps/web } }
+    name: Production web build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/web
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '22', cache: 'npm', cache-dependency-path: apps/web/package.json }
-      - run: npm install
-      - run: npm run build
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build production application
+        run: npm run build

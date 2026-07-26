@@ -1,21 +1,39 @@
 name: Stripe integration security
+
 on:
   pull_request:
   push:
     branches: [main, master]
   workflow_dispatch:
+
 permissions:
   contents: read
+
+concurrency:
+  group: stripe-security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   prevent-stripe-secret-leaks:
-    runs-on: ubuntu-latest
+    name: Reject committed Stripe credentials
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - name: Reject committed Stripe credentials
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Scan tracked files for Stripe credentials
         shell: bash
         run: |
           set -euo pipefail
-          if git grep -nE '(sk|rk)_(live|test)_[A-Za-z0-9]{16,}|whsec_[A-Za-z0-9]{16,}' -- ':!*.lock' ':!stripe-security.yml'; then exit 1; fi
-      - name: ClearGlass Stripe contract
+          if git grep -nE '(sk|rk)_(live|test)_[A-Za-z0-9]{16,}|whsec_[A-Za-z0-9]{16,}' -- ':!*.lock' ':!.github/workflows/stripe-security.yml'; then
+            echo "::error::Potential Stripe credential found in a tracked file."
+            exit 1
+          fi
+
+      - name: Record integration security contract
         run: |
-          echo 'Account acct_1TG2qt65MGeeiD4K; use encrypted STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_ALLOWED_PRICE_IDS, STRIPE_SUCCESS_URL, STRIPE_CANCEL_URL. Require hosted Checkout, server-side prices, verified raw-body webhooks, and idempotency.'
+          echo "Use encrypted Stripe secrets, server-side price allowlists, hosted Checkout, verified raw-body webhooks, and idempotency."
