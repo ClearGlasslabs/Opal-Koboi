@@ -165,6 +165,23 @@ Every AI tool call uses a signed execution envelope:
 - Model governance tracks model cards, approved data domains, eval results, known limitations, and retirement dates.
 - Prompt governance stores owners, versions, diffs, approvals, eval deltas, deployment rings, and rollback targets.
 
+### Financial and cross-border regulatory control plane
+
+ClearGlassInc Artemis treats legal conclusions as versioned configuration owned by counsel, not as model-generated policy. A deployment profile records approved processing purposes, data categories, processing regions, retention ceilings, external-model routes, and training eligibility. The execution gateway evaluates that profile **before retrieval and again before tool dispatch**; a denial cannot be overridden by an agent. This creates a defensible control mapping without pretending that software replaces fact-specific legal analysis.
+
+The U.S./New York and Canada/Ontario planes remain separate even when they share an ontology. U.S. financial and customer records are routed through institution-specific GLBA/Regulation S-P, BSA/AML, sanctions, state privacy, and New York cybersecurity control mappings as applicable. Canadian records are routed through the applicable private- or public-sector privacy profile, contractual residency commitments, FINTRAC control mappings when the activity is in scope, and OSFI expectations where ClearGlassInc Artemis serves a federally regulated financial institution. Coalition release markings do not substitute for privacy authority, consent, statutory authority, or a cross-border transfer assessment.
+
+Operational requirements:
+
+1. **Purpose bind:** every query, embedding, prompt, export, and derived object carries a machine-readable approved purpose and mission.
+2. **Minimize before inference:** tokenize or redact account numbers, authentication material, and direct identifiers before any model route that does not require them.
+3. **Regional route:** model router and retrieval indexes are partitioned by the counsel-approved processing region; failover may not silently cross a boundary.
+4. **Derived-data deletion:** retention and legal-hold state propagate to chunks, embeddings, caches, eval fixtures, traces, and exported intel products.
+5. **No implicit training:** operator feedback may improve evals and proposals, but regulated content enters training only under a separately approved profile.
+6. **Evidence package:** each decision preserves the profile version, purpose, data categories, region, minimization transform, provider route, approvals, and deterministic decision hash.
+
+The executable reference is `intelligence/artemis_regulatory_controls.py`. It fails closed on unapproved purpose, region, retention, training, and external handling of authentication data, then returns obligations that the gateway must enforce. Profiles should be approved by U.S. and Canadian counsel and privacy/security owners before production use; they are control artifacts, not legal opinions.
+
 ## Code Examples
 
 ### Python FastAPI feedback endpoint
