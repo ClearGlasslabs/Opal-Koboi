@@ -1,5 +1,6 @@
-from pathlib import Path
 import tempfile
+from pathlib import Path
+
 from security.ci_guard import scan_workflow
 
 POLICY = {"untrusted_events": [], "allowed_mutable_refs": [], "fail_on": ["critical", "high"]}
