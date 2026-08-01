@@ -116,7 +116,7 @@ The landing page is implemented in `apps/web/app/page.tsx`. Add real screenshots
 
 ## ClearGlassInc Artemis 2040 Architecture
 
-For the broader self-evolving intelligence platform design using Palantir Gotham, Foundry, AIP, and Apollo, see [`artemis-blueprint.md`](./artemis-blueprint.md) and the architecture documents in [`docs/`](./docs/).
+The executable platform core now includes a tenant-isolated agent registry, typed replay-resistant event bus, deterministic policy engine, connector contracts, and explicit domain boundaries. For the end-to-end design—including Palantir Gotham, Foundry, AIP, Apollo, ontology, self-improvement controls, interface contracts, and a mission walkthrough—see [`docs/artemis-platform-architecture.md`](./docs/artemis-platform-architecture.md).
 
 ---
 

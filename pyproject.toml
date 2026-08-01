@@ -31,7 +31,7 @@ dev = [
 clearglass-watchdog = "intelligence.financial_watchdog_agent:main"
 
 [tool.setuptools]
-packages = ["intelligence"]
+packages = ["agents", "cybersecurity", "executive", "intelligence", "memory", "policy", "telemetry"]
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-markers"
