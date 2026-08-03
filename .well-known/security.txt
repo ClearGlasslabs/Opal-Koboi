@@ -1,0 +1,6 @@
+Contact: mailto:security@clearglassinc.com
+Policy: https://github.com/ClearGlassLabs/Opal-Koboi/security/policy
+Acknowledgments: https://github.com/ClearGlassLabs/Opal-Koboi/security/advisories
+Preferred-Languages: en
+Canonical: https://clearglasslabs.github.io/Opal-Koboi/.well-known/security.txt
+Expires: 2027-08-03T00:00:00Z

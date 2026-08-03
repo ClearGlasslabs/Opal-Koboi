@@ -3,12 +3,15 @@ from __future__ import annotations
 import logging
 import time
 import uuid
+from collections import defaultdict, deque
 from collections.abc import Awaitable, Callable
 
 from fastapi import Request, Response
+from starlette.responses import JSONResponse
 
 LOGGER_NAME = "clearglass.artemis.api"
 logger = logging.getLogger(LOGGER_NAME)
+_request_windows: dict[str, deque[float]] = defaultdict(deque)
 
 
 def configure_logging() -> None:
@@ -70,3 +73,31 @@ def apply_security_headers(response: Response) -> None:
     response.headers.setdefault("Referrer-Policy", "no-referrer")
     response.headers.setdefault("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
     response.headers.setdefault("Cache-Control", "no-store")
+    response.headers.setdefault(
+        "Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'; base-uri 'none'"
+    )
+    response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
+    response.headers.setdefault("Cross-Origin-Resource-Policy", "same-origin")
+    response.headers.setdefault("X-Permitted-Cross-Domain-Policies", "none")
+    response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+
+
+def enforce_rate_limit(request: Request, *, limit: int, window_seconds: int) -> Response | None:
+    """Small single-process safety net; production edges must enforce distributed quotas."""
+    identity = request.headers.get("x-forwarded-for", "").split(",", 1)[0].strip()
+    if not identity:
+        identity = request.client.host if request.client else "unknown"
+    key = f"{identity}:{request.url.path}"
+    now = time.monotonic()
+    window = _request_windows[key]
+    while window and window[0] <= now - window_seconds:
+        window.popleft()
+    if len(window) >= limit:
+        logger.warning("request_throttled path=%s", request.url.path)
+        return JSONResponse(
+            status_code=429,
+            content={"detail": "Request quota exceeded"},
+            headers={"Retry-After": str(window_seconds)},
+        )
+    window.append(now)
+    return None

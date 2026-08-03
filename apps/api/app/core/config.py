@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     allowed_origins: list[str] = []
     high_risk_price_delta_percent: int = Field(default=20, ge=1, le=100)
     high_risk_inventory_delta: int = Field(default=100, ge=1)
+    rate_limit_requests: int = Field(default=120, ge=10, le=10_000)
+    rate_limit_window_seconds: int = Field(default=60, ge=10, le=3600)
 
     @field_validator("api_key")
     @classmethod
@@ -28,6 +30,21 @@ class Settings(BaseSettings):
         if len(value) < 32:
             raise ValueError("CONTROL_PLANE_API_KEY must contain at least 32 characters")
         return value
+
+    @field_validator("environment")
+    @classmethod
+    def validate_environment(cls, value: str) -> str:
+        return value.strip().lower()
+
+    def assert_production_safe(self) -> None:
+        """Reject known development credentials before serving production traffic."""
+        if (
+            self.environment == "production"
+            and self.api_key == "development-only-change-me-32-characters"
+        ):
+            raise ValueError(
+                "CONTROL_PLANE_API_KEY must be supplied by a production secret manager"
+            )
 
 
 @lru_cache
