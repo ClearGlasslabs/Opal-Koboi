@@ -36,6 +36,7 @@ packages = ["agents", "cybersecurity", "executive", "intelligence", "memory", "p
 [tool.pytest.ini_options]
 addopts = "-ra --strict-markers"
 testpaths = ["tests"]
+pythonpath = ["."]
 
 [tool.ruff]
 target-version = "py310"
