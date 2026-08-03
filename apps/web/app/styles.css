@@ -16,6 +16,8 @@
 .neonPulse--bottom::before{top:auto;bottom:0;left:48%;right:8%}
 .neonPulse--bottom::after{top:auto;bottom:-13px;left:58%}
 .commandNav{isolation:isolate;box-shadow:0 8px 40px rgba(16,110,158,.08)}
+.experienceNav{min-height:42px;margin:-14px 0 24px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line);font:7px 'JetBrains Mono';letter-spacing:.12em;color:var(--muted)}
+.experienceLabel{color:var(--cyan)}.experienceNav ol{display:flex;align-items:center;gap:9px;list-style:none;margin:0;padding:0}.experienceNav li{display:flex;align-items:center;gap:9px}.experienceNav a{color:var(--muted);text-decoration:none}.experienceNav a:hover,.experienceNav a:focus-visible{color:var(--cyan)}.experienceNav a[aria-current=page]{color:var(--ink)}.experienceCta{margin-left:auto!important;color:var(--cyan)!important;border-left:1px solid var(--line);padding-left:16px}
 .commandNav>*:not(.neonPulse){position:relative;z-index:1}
 .brandMark,.rail button.active,.agentOrb{transition:box-shadow .4s ease,text-shadow .4s ease}
 .rail button.active{box-shadow:inset 12px 0 22px -14px rgba(97,232,255,.9);text-shadow:0 0 12px rgba(97,232,255,.85)}
@@ -48,5 +50,4 @@
 @keyframes agentGlow{0%,100%{box-shadow:0 0 9px rgba(97,232,255,.08)}50%{box-shadow:0 0 17px rgba(97,232,255,.25),inset 0 0 10px rgba(97,232,255,.06)}}
 @keyframes dividerGlow{0%,100%{opacity:.3;transform:scaleX(.7)}50%{opacity:.85;transform:scaleX(1)}}
 @media(prefers-reduced-motion:reduce){.neonSurface,.neonAction,.brandMark,.rail button.active,.agentOrb{transition:none}.neonPulse{opacity:.58}.neonPulse::before,.neonPulse::after{animation:none}}
-.legalFooter{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between;margin-top:22px;padding:18px 2px;color:var(--muted);font:8px 'JetBrains Mono';line-height:1.6}.legalFooter a{color:var(--cyan)}
-.legalPage{max-width:900px;margin:auto;padding:56px 24px 100px;line-height:1.75}.legalPage>a,.legalPage a{color:var(--cyan)}.legalPage h1{margin:30px 0}.legalPage section{border-top:1px solid var(--line);padding:22px 0}.legalPage p{color:#a9bbc8}.legalWarning{border:1px solid rgba(255,100,124,.45);padding:18px;background:rgba(255,100,124,.06)}
+@media(max-width:600px){.experienceNav{align-items:flex-start;flex-wrap:wrap;padding-bottom:12px}.experienceLabel{width:100%}.experienceCta{margin-left:0!important;border-left:0;padding-left:0}}

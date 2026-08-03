@@ -86,11 +86,15 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
 .arch-kicker{font-family:var(--font-display);color:var(--gold);font-size:.72rem;letter-spacing:.12em}
 .arch-item p{color:var(--muted);font-size:.94rem;line-height:1.55}
 .code-panel{margin-top:1.5rem;padding:1.2rem;border-radius:14px;border:1px solid var(--border-h);background:#050b18;overflow:auto;font-family:var(--font-mono);font-size:.78rem;color:#bdefff;line-height:1.55}
+.journey-map{margin-top:2.4rem;padding:clamp(1.3rem,3vw,2rem);border:1px solid var(--border-h);border-radius:22px;background:linear-gradient(135deg,rgba(0,229,255,.08),rgba(8,15,32,.9) 52%,rgba(255,201,64,.06));box-shadow:0 24px 70px rgba(0,0,0,.28)}
+.journey-head{display:flex;align-items:end;justify-content:space-between;gap:1.5rem;margin-bottom:1.5rem}.journey-head p{max-width:560px;color:var(--muted);line-height:1.6}.journey-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:16px;overflow:hidden}.journey-step{position:relative;min-height:170px;padding:1.25rem;background:rgba(3,7,18,.94);text-decoration:none;color:var(--text);transition:background .25s,transform .25s}.journey-step:hover{background:rgba(0,229,255,.09)}.journey-step small{display:block;font-family:var(--font-mono);font-size:.64rem;letter-spacing:.15em;color:var(--cyan)}.journey-step strong{display:block;font-family:var(--font-display);font-size:.92rem;margin:.75rem 0}.journey-step span{display:block;color:var(--muted);font-size:.82rem;line-height:1.5}.journey-step b{position:absolute;right:1rem;bottom:1rem;color:var(--gold)}
+.context-link{display:inline-flex;align-items:center;gap:.55rem;margin-top:1.2rem;color:var(--cyan);font-family:var(--font-mono);font-size:.76rem;text-decoration:none}.context-link:hover{text-decoration:underline}.context-link:focus-visible,.journey-step:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
 @media (max-width: 720px) {
   .nav-links{display:none}
   .nav-mobile{display:block}
   .contact-grid{grid-template-columns:1fr}
   .hero-stats{gap:2rem}
+  .journey-head{display:block}.journey-head p{margin-top:.8rem}.journey-steps{grid-template-columns:1fr}.journey-step{min-height:140px}
 }
 @media (prefers-reduced-motion: reduce) {
   .card, .btn-primary, .btn-ghost {transition: none !important}
@@ -190,6 +194,7 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
       </ul>
     </div>
   </div>
+  <a class="context-link" href="#platforms">Next: see how these capabilities become one platform <span aria-hidden="true">→</span></a>
 </section>
 
 <section id="platforms" class="section">
@@ -224,6 +229,7 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
       </ul>
     </div>
   </div>
+  <a class="context-link" href="#architecture">Next: explore the governed system architecture <span aria-hidden="true">→</span></a>
 </section>
 
 
@@ -245,6 +251,7 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
   </div>
   <pre class="code-panel"><code>feedback.recorded → eval_suite.refresh → change_proposal.created → human_review → apollo.canary(5%) → metrics_gate → promote_or_rollback</code></pre>
   <p style="margin-top:1.4rem"><a href="artemis-blueprint.md" class="btn-primary">READ TECHNICAL BLUEPRINT</a></p>
+  <a class="context-link" href="CG-os.html#architecture">Continue into the CG-OS product narrative <span aria-hidden="true">→</span></a>
 </section>
 
 <section id="blog" class="section">
@@ -282,6 +289,18 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
   "rules": ["valid JSON only", "accurate claims", "human-approved optimization", "conversion-first"]
 }</code></pre>
   <p style="margin-top:1.4rem"><a href="docs/advanced-campaign-system.md" class="btn-primary">OPEN ADVANCED SYSTEM PROMPT</a></p>
+</section>
+
+<section class="section" id="journey" aria-labelledby="journey-title">
+  <div class="journey-map">
+    <div class="journey-head"><div><div class="section-label">YOUR ARTEMIS PATH</div><h2 class="section-title" id="journey-title" style="margin-bottom:0">From first signal to governed action.</h2></div><p>Follow the complete story in sequence, or enter at the point that matches your mission. Every step keeps evidence, policy, and human authority in view.</p></div>
+    <nav class="journey-steps" aria-label="Recommended Artemis journey">
+      <a class="journey-step" href="#about"><small>01 · ORIENT</small><strong>Understand the mission</strong><span>Start with public-sector intelligence capabilities and operating principles.</span><b aria-hidden="true">↗</b></a>
+      <a class="journey-step" href="#platforms"><small>02 · DISCOVER</small><strong>Explore the platform suite</strong><span>See how Artemis IV, Nexus, and social intelligence work together.</span><b aria-hidden="true">↗</b></a>
+      <a class="journey-step" href="CG-os.html#architecture"><small>03 · EVALUATE</small><strong>Enter the flagship</strong><span>Inspect architecture, ontology, agents, controls, and Python-first implementation.</span><b aria-hidden="true">↗</b></a>
+      <a class="journey-step" href="#contact"><small>04 · ACT</small><strong>Request a briefing</strong><span>Move from technical evaluation to a mission-scoped executive conversation.</span><b aria-hidden="true">↗</b></a>
+    </nav>
+  </div>
 </section>
 
 <section id="contact" class="section">
