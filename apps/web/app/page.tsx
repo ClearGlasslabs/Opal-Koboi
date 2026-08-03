@@ -20,7 +20,7 @@ export default function Page() {
   const [modal, setModal] = useState(false)
 
   return <main className="commandShell">
-    <header className="commandNav">
+    <header className="commandNav neon-edge">
       <div className="commandBrand"><span className="brandMark">A</span><div><b>CLEARGLASSINC</b><small>ARTEMIS / MISSION CONTROL</small></div></div>
       <div className="mission"><span /> OPERATION NIGHTGLASS <em>SECRET // COALITION</em></div>
       <div className="operator">COMMANDER I. VOSS <button aria-label="Open profile">IV</button></div>
@@ -33,12 +33,12 @@ export default function Page() {
 
     <section className="commandMain">
       <div className="topline"><div><p>EXECUTIVE ORCHESTRATION / LIVE</p><h1>Mission intelligence</h1></div><div className="systemHealth"><span>98.7%</span><small>SYSTEM CONFIDENCE</small></div></div>
-      <div className="metricRow">
+      <div className="metricRow neon-surface">
         {[['1,284','EVENTS / MIN','+12.4%'],['47','ACTIVE ENTITIES','+6'],['04','AGENTS ONLINE','NOMINAL'],['02','APPROVALS','ACTION REQUIRED']].map((m,i) => <article key={m[1]} className={i===3?'attention':''}><small>{m[1]}</small><strong>{m[0]}</strong><em>{m[2]}</em></article>)}
       </div>
 
       <div className="commandGrid">
-        <section className="graphPanel glass">
+        <section className="graphPanel glass neon-surface neon-surface--cyan">
           <div className="panelHead"><div><small>LIVE EVIDENCE GRAPH</small><h2>Threat constellation</h2></div><span>47 ENTITIES · 92 EDGES</span></div>
           <div className="orbitalGraph" aria-label="Animated relationship visualization">
             <div className="ring r1"/><div className="ring r2"/><div className="ring r3"/>
@@ -49,7 +49,7 @@ export default function Page() {
           <div className="graphLegend"><span><i className="threat"/> Threat</span><span><i className="asset"/> Asset</span><span><i className="identity"/> Identity</span><b>PROVENANCE VERIFIED</b></div>
         </section>
 
-        <section className="signalsPanel glass">
+        <section className="signalsPanel glass neon-surface neon-surface--violet">
           <div className="panelHead"><div><small>INTELLIGENCE STREAM</small><h2>Priority signals</h2></div><button>FILTER</button></div>
           <div className="signalList">{signals.map((signal,i)=><button key={signal.time} className={selected===i?'selected':''} onClick={()=>setSelected(i)}>
             <div className="signalTime">{signal.time}<i/></div><div><small>{signal.kind}</small><strong>{signal.title}</strong><p>{signal.detail}</p></div><span className={signal.risk>70?'critical':''}>{signal.risk}</span>
@@ -57,15 +57,15 @@ export default function Page() {
           <button className="reviewAction" onClick={()=>setModal(true)}>REVIEW RECOMMENDATION <span>→</span></button>
         </section>
 
-        <section className="agentsPanel glass">
+        <section className="agentsPanel glass neon-surface neon-surface--blue">
           <div className="panelHead"><div><small>AUTONOMOUS EXECUTION</small><h2>Agent registry</h2></div><span>4 / 4 REGISTERED</span></div>
           <div className="agentList">{agents.map((agent,i)=><div key={agent[0]}><span className={`agentOrb a${i}`}>{agent[0][0]}</span><div><strong>{agent[0]}</strong><small>{agent[1]}</small></div><em>{agent[2]}</em><time>{agent[3]}</time></div>)}</div>
         </section>
 
-        <section className="auditPanel glass"><small>IMMUTABLE AUDIT</small><h2>Control trace</h2><div className="trace"><span/><p><b>POLICY CHECK PASSED</b><small>AEGIS · action:correlate · 02:14:11</small></p></div><div className="trace"><span/><p><b>HUMAN APPROVAL REQUIRED</b><small>Risk 82 · two-person gate · 02:14:14</small></p></div></section>
+        <section className="auditPanel glass neon-surface neon-surface--magenta"><small>IMMUTABLE AUDIT</small><h2>Control trace</h2><div className="trace"><span/><p><b>POLICY CHECK PASSED</b><small>AEGIS · action:correlate · 02:14:11</small></p></div><div className="trace"><span/><p><b>HUMAN APPROVAL REQUIRED</b><small>Risk 82 · two-person gate · 02:14:14</small></p></div></section>
       </div>
     </section>
 
-    {modal && <div className="modalBackdrop" role="presentation" onMouseDown={()=>setModal(false)}><section className="secureModal" role="dialog" aria-modal="true" aria-labelledby="approval-title" onMouseDown={e=>e.stopPropagation()}><div className="modalSeal">◈</div><small>SECURE ACTION / TWO-PERSON CONTROL</small><h2 id="approval-title">Review containment package</h2><p>Artemis recommends isolating <b>ASSET-7</b> from mission network segments. This remains a proposal until separately approved and re-authorized at execution time.</p><div className="riskBar"><span>RISK SCORE</span><b>82 / 100</b></div><ul><li>4 evidence objects with verified provenance</li><li>Rollback plan attached and validated</li><li>Sensitive arguments sanitized from preview</li></ul><label>DECISION RATIONALE<textarea placeholder="Required for approval or rejection" /></label><div className="modalActions"><button onClick={()=>setModal(false)}>CANCEL</button><button className="reject" onClick={()=>setModal(false)}>REJECT</button><button className="approve" onClick={()=>setModal(false)}>REQUEST SECOND APPROVAL</button></div></section></div>}
+    {modal && <div className="modalBackdrop" role="presentation" onMouseDown={()=>setModal(false)}><section className="secureModal neon-surface neon-surface--cyan" role="dialog" aria-modal="true" aria-labelledby="approval-title" onMouseDown={e=>e.stopPropagation()}><div className="modalSeal">◈</div><small>SECURE ACTION / TWO-PERSON CONTROL</small><h2 id="approval-title">Review containment package</h2><p>Artemis recommends isolating <b>ASSET-7</b> from mission network segments. This remains a proposal until separately approved and re-authorized at execution time.</p><div className="riskBar"><span>RISK SCORE</span><b>82 / 100</b></div><ul><li>4 evidence objects with verified provenance</li><li>Rollback plan attached and validated</li><li>Sensitive arguments sanitized from preview</li></ul><label>DECISION RATIONALE<textarea placeholder="Required for approval or rejection" /></label><div className="modalActions"><button onClick={()=>setModal(false)}>CANCEL</button><button className="reject" onClick={()=>setModal(false)}>REJECT</button><button className="approve" onClick={()=>setModal(false)}>REQUEST SECOND APPROVAL</button></div></section></div>}
   </main>
 }
