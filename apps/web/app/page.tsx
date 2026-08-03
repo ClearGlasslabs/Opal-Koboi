@@ -35,7 +35,7 @@ export default function Page() {
 
     <section className="commandMain">
       <div className="topline"><div><p>EXECUTIVE ORCHESTRATION / LIVE</p><h1>Mission intelligence</h1></div><div className="systemHealth"><span>98.7%</span><small>SYSTEM CONFIDENCE</small></div></div>
-      <div className="metricRow">
+      <div className="metricRow neon-surface">
         {[['1,284','EVENTS / MIN','+12.4%'],['47','ACTIVE ENTITIES','+6'],['04','AGENTS ONLINE','NOMINAL'],['02','APPROVALS','ACTION REQUIRED']].map((m,i) => <article key={m[1]} className={i===3?'attention':''}><small>{m[1]}</small><strong>{m[0]}</strong><em>{m[2]}</em></article>)}
       </div>
 
