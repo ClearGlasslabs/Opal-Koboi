@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useId, useRef, useState } from 'react'
 import { NeonPulse } from './components/NeonPulse'
 import { ExperienceNav } from './components/ExperienceNav'
+import { CyberAtmosphere } from './components/CyberAtmosphere'
 
 const agents = [
   ['ORION', 'Triage lead', 'ACTIVE', '18ms'],
@@ -98,6 +99,7 @@ export default function Page() {
   }
 
   return <main ref={shellRef} className="commandShell">
+    <CyberAtmosphere />
     <header className="commandNav">
       <NeonPulse position="bottom" />
       <div className="commandBrand"><span className="brandMark">A</span><div><b>CLEARGLASSINC</b><small>ARTEMIS / MISSION CONTROL</small></div></div>
@@ -123,11 +125,11 @@ export default function Page() {
         <div className="heroRadar" aria-hidden="true"><span className="scanLine"/><i className="radarCore">A</i><b>LIVE FUSION</b><small>PROVENANCE / POLICY / PURPOSE</small></div>
       </section>
 
-      <section className="promiseSection" id="platform-promise">
+      <section className="promiseSection neonSection" id="platform-promise">
         <p className="sectionIndex">01 / THE PROMISE</p><div><h2>One intelligence fabric.<br/>No blind decisions.</h2><p>Artemis unifies fragmented data, living ontology, agentic reasoning, and deployment control—so teams can move from first indication to defensible decision without losing context, provenance, or command.</p></div>
       </section>
 
-      <section className="capabilitySection protectedRegion" data-protected="capability framework">
+      <section className="capabilitySection protectedRegion neonSection" data-protected="capability framework">
         <span className="watermark diagonal" aria-hidden="true">CLEARGLASSINC ARTEMIS • CONTROLLED VIEW • 2026</span>
         <div className="sectionHeading"><p className="sectionIndex">02 / COMMAND SURFACES</p><h2>Built to know. Designed to answer.</h2><p>Four synchronized layers turn complexity into operational clarity.</p></div>
         <div className="capabilityGrid">
@@ -138,13 +140,13 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="proofSection">
+      <section className="proofSection neonSection">
         <div><p className="sectionIndex">03 / OPERATING STANDARD</p><h2>Trust is not a claim.<br/>It is the architecture.</h2></div>
         <div className="proofMetrics"><article><strong>100%</strong><span>CONSEQUENTIAL ACTIONS<br/>HUMAN-GATED</span></article><article><strong>&lt;100ms</strong><span>TARGET TRIAGE<br/>DECISION LATENCY</span></article><article><strong>360°</strong><span>LINEAGE, POLICY<br/>&amp; AUDIT TRACE</span></article></div>
         <p className="proofNote">Illustrative architecture targets. Mission-specific performance is validated during deployment.</p>
       </section>
 
-      <section className="conversionSection"><p className="eyebrow">THE NEXT DECISION STARTS NOW</p><h2>Bring every signal into focus.</h2><p>Step inside Artemis and see what governed intelligence can make possible.</p><a className="primaryCta" href="https://www.clearglassinc.com/#contact">ENTER THE BRIEFING ROOM <span>↗</span></a><small>SECURE DISCOVERY · MISSION-ALIGNED SCOPING · NO OBLIGATION</small></section>
+      <section className="conversionSection neonSection"><p className="eyebrow">THE NEXT DECISION STARTS NOW</p><h2>Bring every signal into focus.</h2><p>Step inside Artemis and see what governed intelligence can make possible.</p><a className="primaryCta" href="https://www.clearglassinc.com/#contact">ENTER THE BRIEFING ROOM <span>↗</span></a><small>SECURE DISCOVERY · MISSION-ALIGNED SCOPING · NO OBLIGATION</small></section>
 
       <ExperienceNav />
       <div className="topline"><div><p>EXECUTIVE ORCHESTRATION / LIVE</p><h1>Mission intelligence</h1></div><div className="systemHealth"><span>98.7%</span><small>SYSTEM CONFIDENCE</small></div></div>
