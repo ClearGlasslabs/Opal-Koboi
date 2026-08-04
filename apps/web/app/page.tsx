@@ -144,6 +144,25 @@ export default function Page() {
         <p className="proofNote">Illustrative architecture targets. Mission-specific performance is validated during deployment.</p>
       </section>
 
+      <section className="protectionSection protectedRegion" data-protected="protection blueprint">
+        <span className="watermark diagonal" aria-hidden="true">CLEARGLASSINC ARTEMIS • WATERMARKED STRATEGY LAYER</span>
+        <div className="sectionHeading"><p className="sectionIndex">04 / PROTECTED PREVIEW</p><h2>Valuable enough to defend.<br/>Elegant enough to invite.</h2><p>Artemis does not pretend a browser can stop every screenshot. It makes unauthorized reuse less useful through visible ownership, motion, gated detail, and a practical response plan.</p></div>
+        <div className="protectionGrid">
+          <article><small>WATERMARKS</small><h3>Signature in every capture.</h3><p>Strategic regions carry faint ClearGlassInc Artemis marks, diagonal ownership bands, and screenshot-visible preview labels.</p></article>
+          <article><small>DYNAMIC VALUE</small><h3>Static grabs miss the system.</h3><p>Live signal motion, rotating radar states, and paused sensitive previews make still images incomplete by design.</p></article>
+          <article><small>SELECTIVE FRICTION</small><h3>Protection without hostility.</h3><p>Right-click, copy, cut, and drag prevention applies only to protected regions while forms and accessibility paths remain usable.</p></article>
+          <article><small>GATED DEPTH</small><h3>Real frameworks stay controlled.</h3><p>High-detail architecture, proprietary workflows, and mission-specific packages move behind secure briefing access.</p></article>
+        </div>
+        <div className="responsePlan">
+          <b>CONTENT RESPONSE PLAN</b>
+          <ol>
+            <li>Monitor high-value phrases, visuals, and framework names.</li>
+            <li>Capture evidence with timestamps, URLs, and ownership watermarks.</li>
+            <li>Escalate takedown requests, platform reports, and legal review.</li>
+          </ol>
+        </div>
+      </section>
+
       <section className="conversionSection"><p className="eyebrow">THE NEXT DECISION STARTS NOW</p><h2>Bring every signal into focus.</h2><p>Step inside Artemis and see what governed intelligence can make possible.</p><a className="primaryCta" href="https://www.clearglassinc.com/#contact">ENTER THE BRIEFING ROOM <span>↗</span></a><small>SECURE DISCOVERY · MISSION-ALIGNED SCOPING · NO OBLIGATION</small></section>
 
       <ExperienceNav />
