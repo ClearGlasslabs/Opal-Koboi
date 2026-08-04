@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const metadata = {
   title: "Legal, privacy and acceptable use | ClearGlassInc Artemis",
   description:
@@ -8,7 +10,7 @@ export const metadata = {
 export default function LegalPage() {
   return (
     <main className="legalPage">
-      <a href="/">← Return to Artemis</a>
+      <Link href="/">← Return to Artemis</Link>
       <h1>Legal, privacy &amp; responsible use</h1>
       <p className="legalWarning">
         <b>Template status — legal review required.</b> Effective date: [DATE].
