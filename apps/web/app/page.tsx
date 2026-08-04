@@ -23,7 +23,9 @@ export default function Page() {
   const [criticalOnly, setCriticalOnly] = useState(false)
   const [decisionError, setDecisionError] = useState('')
   const [notice, setNotice] = useState('')
+  const [privacyPause, setPrivacyPause] = useState(false)
   const dialogRef = useRef<HTMLElement>(null)
+  const shellRef = useRef<HTMLElement>(null)
   const reviewButtonRef = useRef<HTMLButtonElement>(null)
   const rationaleId = useId()
   const visibleSignals = criticalOnly ? signals.filter((signal) => signal.risk > 70) : signals
@@ -55,6 +57,34 @@ export default function Page() {
     }
   }, [modal])
 
+  useEffect(() => {
+    const shell = shellRef.current
+    if (!shell) return
+    const isProtected = (target: EventTarget | null) => target instanceof Element && Boolean(target.closest('[data-protected]'))
+    const isEditable = (target: EventTarget | null) => target instanceof Element && Boolean(target.closest('input, textarea, [contenteditable="true"]'))
+    const deterCopy = (event: Event) => {
+      if (isProtected(event.target) && !isEditable(event.target)) {
+        event.preventDefault()
+        setNotice('This mission preview is protected. Contact ClearGlassInc Artemis for authorized materials.')
+      }
+    }
+    const pause = () => document.visibilityState === 'hidden' && setPrivacyPause(true)
+    const idleTimer = window.setTimeout(() => setPrivacyPause(true), 90_000)
+    shell.addEventListener('contextmenu', deterCopy)
+    shell.addEventListener('copy', deterCopy)
+    shell.addEventListener('cut', deterCopy)
+    shell.addEventListener('dragstart', deterCopy)
+    document.addEventListener('visibilitychange', pause)
+    return () => {
+      window.clearTimeout(idleTimer)
+      shell.removeEventListener('contextmenu', deterCopy)
+      shell.removeEventListener('copy', deterCopy)
+      shell.removeEventListener('cut', deterCopy)
+      shell.removeEventListener('dragstart', deterCopy)
+      document.removeEventListener('visibilitychange', pause)
+    }
+  }, [])
+
   const closeModal = () => { setDecisionError(''); setModal(false) }
   const submitDecision = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -67,7 +97,7 @@ export default function Page() {
     closeModal()
   }
 
-  return <main className="commandShell">
+  return <main ref={shellRef} className="commandShell">
     <header className="commandNav">
       <NeonPulse position="bottom" />
       <div className="commandBrand"><span className="brandMark">A</span><div><b>CLEARGLASSINC</b><small>ARTEMIS / MISSION CONTROL</small></div></div>
@@ -76,11 +106,46 @@ export default function Page() {
     </header>
 
     <aside className="rail" aria-label="Command navigation">
-      {['⌾', '⌁', '◇', '△', '◎'].map((icon, i) => <a className={i === 0 ? 'active' : ''} key={icon} aria-label={['Overview','Graph','Signals','Agents','Audit'][i]} href={['#mission-control','#threat-graph','#priority-signals','#agent-registry','#control-trace'][i]}>{icon}</a>)}
+      {['⌾', '⌁', '◇', '△', '◎'].map((icon, i) => <a className={i === 0 ? 'active' : ''} key={icon} aria-label={['Overview','Graph','Signals','Agents','Audit'][i]} href={['#overview','#threat-graph','#priority-signals','#agent-registry','#control-trace'][i]}>{icon}</a>)}
       <div className="railStatus"><i /> ZERO TRUST</div>
     </aside>
 
     <section className="commandMain" id="mission-control">
+      <section className="landingHero protectedRegion" id="overview" data-protected="brand narrative">
+        <span className="watermark" aria-hidden="true">CLEARGLASSINC / ARTEMIS / AUTHORIZED PREVIEW</span>
+        <div className="heroCopy">
+          <p className="eyebrow">HUMAN-GOVERNED INTELLIGENCE / MACHINE SPEED</p>
+          <h1>See the signal.<br/><em>Command the outcome.</em></h1>
+          <p className="heroLead">ClearGlassInc Artemis fuses every trusted signal into one living operational picture—then turns understanding into governed action.</p>
+          <div className="heroActions"><a className="primaryCta" href="https://www.clearglassinc.com/#contact">REQUEST A SECURE BRIEFING <span>↗</span></a><a className="secondaryCta" href="#platform-promise">EXPLORE THE SYSTEM <span>↓</span></a></div>
+          <small className="heroMicro">Built for coalition-aware, mission-critical environments. Every consequential action stays under human authority.</small>
+        </div>
+        <div className="heroRadar" aria-hidden="true"><span className="scanLine"/><i className="radarCore">A</i><b>LIVE FUSION</b><small>PROVENANCE / POLICY / PURPOSE</small></div>
+      </section>
+
+      <section className="promiseSection" id="platform-promise">
+        <p className="sectionIndex">01 / THE PROMISE</p><div><h2>One intelligence fabric.<br/>No blind decisions.</h2><p>Artemis unifies fragmented data, living ontology, agentic reasoning, and deployment control—so teams can move from first indication to defensible decision without losing context, provenance, or command.</p></div>
+      </section>
+
+      <section className="capabilitySection protectedRegion" data-protected="capability framework">
+        <span className="watermark diagonal" aria-hidden="true">CLEARGLASSINC ARTEMIS • CONTROLLED VIEW • 2026</span>
+        <div className="sectionHeading"><p className="sectionIndex">02 / COMMAND SURFACES</p><h2>Built to know. Designed to answer.</h2><p>Four synchronized layers turn complexity into operational clarity.</p></div>
+        <div className="capabilityGrid">
+          <article><span>01</span><small>GOTHAM / OPERATIONS</small><h3>Track what moves.</h3><p>Investigate entities, reveal networks, and maintain a continuous operational picture across domains.</p><b>ENTITY-LEVEL CLARITY →</b></article>
+          <article><span>02</span><small>FOUNDRY / ONTOLOGY</small><h3>Make data mean something.</h3><p>Fuse live and historical sources into governed objects with lineage, confidence, and temporal truth.</p><b>ONE LIVING MODEL →</b></article>
+          <article><span>03</span><small>AIP / REASONING</small><h3>Accelerate judgment.</h3><p>Deploy evaluated copilots and agents that explain, recommend, and learn inside explicit approval gates.</p><b>HUMAN AUTHORITY →</b></article>
+          <article><span>04</span><small>APOLLO / CONTROL</small><h3>Operate anywhere.</h3><p>Ship securely across cloud, edge, and disconnected environments with policy-bound updates and rollback.</p><b>CONTROLLED EVOLUTION →</b></article>
+        </div>
+      </section>
+
+      <section className="proofSection">
+        <div><p className="sectionIndex">03 / OPERATING STANDARD</p><h2>Trust is not a claim.<br/>It is the architecture.</h2></div>
+        <div className="proofMetrics"><article><strong>100%</strong><span>CONSEQUENTIAL ACTIONS<br/>HUMAN-GATED</span></article><article><strong>&lt;100ms</strong><span>TARGET TRIAGE<br/>DECISION LATENCY</span></article><article><strong>360°</strong><span>LINEAGE, POLICY<br/>&amp; AUDIT TRACE</span></article></div>
+        <p className="proofNote">Illustrative architecture targets. Mission-specific performance is validated during deployment.</p>
+      </section>
+
+      <section className="conversionSection"><p className="eyebrow">THE NEXT DECISION STARTS NOW</p><h2>Bring every signal into focus.</h2><p>Step inside Artemis and see what governed intelligence can make possible.</p><a className="primaryCta" href="https://www.clearglassinc.com/#contact">ENTER THE BRIEFING ROOM <span>↗</span></a><small>SECURE DISCOVERY · MISSION-ALIGNED SCOPING · NO OBLIGATION</small></section>
+
       <ExperienceNav />
       <div className="topline"><div><p>EXECUTIVE ORCHESTRATION / LIVE</p><h1>Mission intelligence</h1></div><div className="systemHealth"><span>98.7%</span><small>SYSTEM CONFIDENCE</small></div></div>
       <div className="metricRow neon-surface">
@@ -91,11 +156,13 @@ export default function Page() {
         <section className="graphPanel glass neonSurface" id="threat-graph">
           <NeonPulse variant="violet" />
           <div className="panelHead"><div><small>LIVE EVIDENCE GRAPH</small><h2>Threat constellation</h2></div><span>47 ENTITIES · 92 EDGES</span></div>
-          <div className="orbitalGraph" role="img" aria-label="Relationship graph with threat TX-091 connected to five entities">
+          <div className={`orbitalGraph protectedRegion ${privacyPause ? 'privacyPaused' : ''}`} data-protected="live evidence preview" role="img" aria-label="Relationship graph with threat TX-091 connected to five entities">
+            <span className="watermark graphWatermark" aria-hidden="true">ARTEMIS / CONTROLLED PREVIEW</span>
             <div className="ring r1"/><div className="ring r2"/><div className="ring r3"/>
             <div className="graphCore"><b>TX-091</b><small>THREAT</small></div>
             {['ASSET-7','IDENTITY','EVENT-31','NODE-14','SOURCE'].map((x,i)=><div key={x} className={`graphNode gn${i+1}`}><i/>{x}</div>)}
             <svg aria-hidden="true" viewBox="0 0 700 410" preserveAspectRatio="none"><path d="M350 205 L130 90 M350 205 L570 75 M350 205 L620 265 M350 205 L190 330 M350 205 L465 350" /></svg>
+            {privacyPause && <button className="privacyResume" type="button" onClick={() => setPrivacyPause(false)}><b>PREVIEW PAUSED</b><span>Return to reveal controlled mission data</span></button>}
           </div>
           <div className="graphLegend"><span><i className="threat"/> Threat</span><span><i className="asset"/> Asset</span><span><i className="identity"/> Identity</span><b>PROVENANCE VERIFIED</b></div>
         </section>

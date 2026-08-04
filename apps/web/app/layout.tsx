@@ -3,9 +3,9 @@ import "./styles.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://clearglasslabs.github.io/Opal-Koboi/"),
-  title: "Artemis Journal — Human-Governed Intelligence",
+  title: "ClearGlassInc Artemis — Human-Governed Intelligence",
   description:
-    "Field notes on human-governed AI, ontology-driven operations, and secure intelligence systems from ClearGlassInc Artemis.",
+    "Fuse every trusted signal into governed action with ClearGlassInc Artemis, the intelligence fabric for mission-critical operations.",
   keywords: [
     "agentic AI",
     "human-governed AI",
