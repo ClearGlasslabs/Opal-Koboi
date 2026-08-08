@@ -36,3 +36,12 @@ def test_sse_security_and_fallback_headers():
     server = (WEB / "lib/live/server.ts").read_text()
     for header in ("text/event-stream", "X-Accel-Buffering", "no-cache, no-transform", "Retry-After", "Origin denied"):
         assert header in server
+
+
+def test_reconnect_attempts_do_not_restart_the_connection_effect():
+    shell = (WEB / "app/components/live/LivePageShell.tsx").read_text()
+    assert "attempt=useRef(0)" in shell
+    assert "[enabled,refresh,snapshot.stream]" in shell
+    assert "[attempt," not in shell
+    assert "document.addEventListener(\"visibilitychange\",visibility)" in shell
+    assert "disposed||source!==connection" in shell

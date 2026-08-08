@@ -17,8 +17,29 @@ export function LiveStatusBanner({ initialData, freshness }: CommonProps) { cons
 export const LivePerformancePanel = LiveMetricCard; export const LiveSystemMap = LiveSignalGrid; export const LiveEventStream = LiveActivityTimeline;
 export class LiveErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> { state = { failed: false }; static getDerivedStateFromError() { return { failed: true }; } render() { return this.state.failed ? <aside className="staleNotice" role="alert">Live module unavailable. Static content remains available. <button type="button" onClick={() => this.setState({ failed: false })}>Retry</button></aside> : this.props.children; } }
 export function LivePageShell({ initialSnapshot, children }: { initialSnapshot: Snapshot; children: ReactNode }) {
- const [snapshot,setSnapshot]=useState(initialSnapshot), [enabled,setEnabled]=useState(initialSnapshot.enabled), [state,setState]=useState<ConnectionState>(initialSnapshot.enabled?"CONNECTING":"DISABLED"), [attempt,setAttempt]=useState(0); const lastId=useRef(initialSnapshot.lastEventId), seen=useRef(new Set<string>());
+ const [snapshot,setSnapshot]=useState(initialSnapshot), [enabled,setEnabled]=useState(initialSnapshot.enabled), [state,setState]=useState<ConnectionState>(initialSnapshot.enabled?"CONNECTING":"DISABLED"); const lastId=useRef(initialSnapshot.lastEventId), seen=useRef(new Set<string>()), attempt=useRef(0);
  const refresh=useCallback(async()=>{try{const r=await fetch(`/api/live/snapshot?stream=${encodeURIComponent(snapshot.stream)}`,{cache:"no-store"});if(!r.ok)throw new Error();const n=await r.json() as Snapshot;setSnapshot(n);setState(n.enabled?"DEGRADED":"DISABLED");}catch{setState(navigator.onLine?"ERROR":"OFFLINE");}},[snapshot.stream]);
- useEffect(()=>{if(!enabled||document.visibilityState==="hidden")return;let source:EventSource|undefined,timer:ReturnType<typeof setTimeout>|undefined;const connect=()=>{setState("CONNECTING");source=new EventSource(`/api/live/${snapshot.stream}${lastId.current?`?lastEventId=${encodeURIComponent(lastId.current)}`:""}`);source.onopen=()=>{setState("LIVE");setAttempt(0)};source.onmessage=(m)=>{let json:unknown;try{json=JSON.parse(m.data)}catch{return}const p=liveEventSchema.safeParse(json);if(!p.success||seen.current.has(p.data.id))return;seen.current.add(p.data.id);lastId.current=p.data.id;setSnapshot(c=>({...c,signal:p.data.payload,lastEventId:p.data.id}))};source.onerror=()=>{source?.close();const n=attempt+1;setAttempt(n);setState(n>=6?"DEGRADED":"CONNECTING");if(n>=6)void refresh();else timer=setTimeout(connect,Math.min(30000,1000*2**attempt)*(.8+Math.random()*.4))}};connect();const offline=()=>setState("OFFLINE"),online=()=>{setAttempt(0);connect()};window.addEventListener("offline",offline);window.addEventListener("online",online);return()=>{source?.close();if(timer)clearTimeout(timer);window.removeEventListener("offline",offline);window.removeEventListener("online",online)}},[attempt,enabled,refresh,snapshot.stream]);
+ useEffect(()=>{
+  if(!enabled){attempt.current=0;return}
+  let source:EventSource|undefined,timer:ReturnType<typeof setTimeout>|undefined,disposed=false;
+  const clearReconnect=()=>{if(timer){clearTimeout(timer);timer=undefined}};
+  const closeSource=()=>{source?.close();source=undefined};
+  const canConnect=()=>navigator.onLine&&document.visibilityState!=="hidden";
+  const scheduleReconnect=(delay:number)=>{clearReconnect();timer=setTimeout(()=>{timer=undefined;connect()},delay)};
+  const connect=()=>{
+   if(disposed||!canConnect())return;
+   closeSource();setState("CONNECTING");
+   const connection=new EventSource(`/api/live/${snapshot.stream}${lastId.current?`?lastEventId=${encodeURIComponent(lastId.current)}`:""}`);source=connection;
+   connection.onopen=()=>{if(disposed||source!==connection)return;setState("LIVE");attempt.current=0};
+   connection.onmessage=(m)=>{if(disposed||source!==connection)return;let json:unknown;try{json=JSON.parse(m.data)}catch{return}const p=liveEventSchema.safeParse(json);if(!p.success||seen.current.has(p.data.id))return;seen.current.add(p.data.id);lastId.current=p.data.id;setSnapshot(c=>({...c,signal:p.data.payload,lastEventId:p.data.id}))};
+   connection.onerror=()=>{if(disposed||source!==connection)return;closeSource();if(!navigator.onLine){setState("OFFLINE");return}const n=++attempt.current;if(n>=6){setState("DEGRADED");void refresh();return}setState("CONNECTING");scheduleReconnect(Math.min(30000,1000*2**(n-1))*(.8+Math.random()*.4))};
+  };
+  const offline=()=>{clearReconnect();closeSource();setState("OFFLINE")};
+  const online=()=>{attempt.current=0;clearReconnect();connect()};
+  const visibility=()=>{if(document.visibilityState==="hidden"){clearReconnect();closeSource()}else if(navigator.onLine)connect()};
+  if(canConnect())connect();else setState(navigator.onLine?"DEGRADED":"OFFLINE");
+  window.addEventListener("offline",offline);window.addEventListener("online",online);document.addEventListener("visibilitychange",visibility);
+  return()=>{disposed=true;clearReconnect();closeSource();window.removeEventListener("offline",offline);window.removeEventListener("online",online);document.removeEventListener("visibilitychange",visibility)}
+ },[enabled,refresh,snapshot.stream]);
  return <LiveErrorBoundary><div className="liveGlobalBar" aria-live="polite"><LiveConnectionIndicator state={state}/><LastUpdatedLabel freshness={snapshot.signal.freshness}/><LiveStreamToggle enabled={enabled} onChange={(v)=>{setEnabled(v);setState(v?"CONNECTING":"DISABLED")}}/><button className="liveControl" type="button" onClick={refresh}>Refresh snapshot</button></div>{children}<noscript><aside className="staleNotice">Live updates require JavaScript. Server-rendered content remains available.</aside></noscript></LiveErrorBoundary>;
 }
