@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useId, useRef, useState } from 'react'
 import { NeonPulse } from './components/NeonPulse'
 import { ExperienceNav } from './components/ExperienceNav'
 import { CyberAtmosphere } from './components/CyberAtmosphere'
+import { ClearGlassSentinel } from './components/ClearGlassSentinel'
 
 const agents = [
   ['ORION', 'Triage lead', 'DEMO', '—'],
@@ -123,6 +124,7 @@ export default function Page() {
           <small className="heroMicro">Built for coalition-aware, mission-critical environments. Every consequential action stays under human authority.</small>
         </div>
         <div className="heroRadar" aria-hidden="true"><span className="scanLine"/><i className="radarCore">A</i><b>ILLUSTRATIVE FUSION</b><small>PROVENANCE / POLICY / PURPOSE</small></div>
+        <ClearGlassSentinel />
       </section>
 
       <section className="promiseSection neonSection" id="platform-promise">
