@@ -1,6 +1,7 @@
 const experienceSteps = [
   { label: 'Overview', href: 'https://www.clearglassinc.com/', external: true },
   { label: 'CG-OS', href: 'https://www.clearglassinc.com/CG-os.html', external: true },
+  { label: 'Products', href: '/products' },
   { label: 'Mission control', href: '#mission-control', current: true },
 ]
 
