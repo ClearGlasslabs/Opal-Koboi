@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./styles.css";
+import { LivePageShell } from "./components/live/LivePageShell";
+import { getPublicSnapshot } from "../lib/live/snapshot";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://clearglasslabs.github.io/Opal-Koboi/"),
@@ -33,14 +35,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body><LivePageShell initialSnapshot={await getPublicSnapshot()}>{children}</LivePageShell></body>
     </html>
   );
 }

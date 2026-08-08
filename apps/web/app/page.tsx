@@ -6,10 +6,10 @@ import { ExperienceNav } from './components/ExperienceNav'
 import { CyberAtmosphere } from './components/CyberAtmosphere'
 
 const agents = [
-  ['ORION', 'Triage lead', 'ACTIVE', '18ms'],
-  ['SPECTRA', 'Fusion analyst', 'ACTIVE', '24ms'],
-  ['AEGIS', 'Policy sentinel', 'ACTIVE', '11ms'],
-  ['MNEMOSYNE', 'Graph curator', 'DEGRADED', '86ms'],
+  ['ORION', 'Triage lead', 'DEMO', '—'],
+  ['SPECTRA', 'Fusion analyst', 'DEMO', '—'],
+  ['AEGIS', 'Policy sentinel', 'DEMO', '—'],
+  ['MNEMOSYNE', 'Graph curator', 'DEMO', '—'],
 ]
 
 const signals = [
@@ -122,7 +122,7 @@ export default function Page() {
           <div className="heroActions"><a className="primaryCta" href="https://www.clearglassinc.com/#contact">REQUEST A SECURE BRIEFING <span>↗</span></a><a className="secondaryCta" href="#platform-promise">EXPLORE THE SYSTEM <span>↓</span></a></div>
           <small className="heroMicro">Built for coalition-aware, mission-critical environments. Every consequential action stays under human authority.</small>
         </div>
-        <div className="heroRadar" aria-hidden="true"><span className="scanLine"/><i className="radarCore">A</i><b>LIVE FUSION</b><small>PROVENANCE / POLICY / PURPOSE</small></div>
+        <div className="heroRadar" aria-hidden="true"><span className="scanLine"/><i className="radarCore">A</i><b>ILLUSTRATIVE FUSION</b><small>PROVENANCE / POLICY / PURPOSE</small></div>
       </section>
 
       <section className="promiseSection neonSection" id="platform-promise">
@@ -168,7 +168,7 @@ export default function Page() {
       <section className="conversionSection"><p className="eyebrow">THE NEXT DECISION STARTS NOW</p><h2>Bring every signal into focus.</h2><p>Step inside Artemis and see what governed intelligence can make possible.</p><a className="primaryCta" href="https://www.clearglassinc.com/#contact">ENTER THE BRIEFING ROOM <span>↗</span></a><small>SECURE DISCOVERY · MISSION-ALIGNED SCOPING · NO OBLIGATION</small></section>
 
       <ExperienceNav />
-      <div className="topline"><div><p>EXECUTIVE ORCHESTRATION / LIVE</p><h1>Mission intelligence</h1></div><div className="systemHealth"><span>98.7%</span><small>SYSTEM CONFIDENCE</small></div></div>
+      <div className="topline"><div><p>EXECUTIVE ORCHESTRATION / ILLUSTRATIVE</p><h1>Mission intelligence</h1></div><div className="systemHealth"><span>98.7%</span><small>SYSTEM CONFIDENCE</small></div></div>
       <div className="metricRow neon-surface">
         {[['1,284','EVENTS / MIN','+12.4%'],['47','ACTIVE ENTITIES','+6'],['04','AGENTS ONLINE','NOMINAL'],['02','APPROVALS','ACTION REQUIRED']].map((m,i) => <article key={m[1]} className={i===3?'attention':''}><small>{m[1]}</small><strong>{m[0]}</strong><em>{m[2]}</em></article>)}
       </div>
@@ -176,7 +176,7 @@ export default function Page() {
       <div className="commandGrid">
         <section className="graphPanel glass neonSurface" id="threat-graph">
           <NeonPulse variant="violet" />
-          <div className="panelHead"><div><small>LIVE EVIDENCE GRAPH</small><h2>Threat constellation</h2></div><span>47 ENTITIES · 92 EDGES</span></div>
+          <div className="panelHead"><div><small>ILLUSTRATIVE EVIDENCE GRAPH</small><h2>Threat constellation</h2></div><span>47 ENTITIES · 92 EDGES</span></div>
           <div className={`orbitalGraph protectedRegion ${privacyPause ? 'privacyPaused' : ''}`} data-protected="live evidence preview" role="img" aria-label="Relationship graph with threat TX-091 connected to five entities">
             <span className="watermark graphWatermark" aria-hidden="true">ARTEMIS / CONTROLLED PREVIEW</span>
             <div className="ring r1"/><div className="ring r2"/><div className="ring r3"/>
