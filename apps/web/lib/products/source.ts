@@ -1,5 +1,3 @@
-import type { ProductRecord } from "./domain";
-
 // Authoritative public catalog source. Commercial fields are intentionally absent
 // until an approved price or checkout identifier exists.
 export const publicProductSource = [
