@@ -6,6 +6,7 @@ on:
     paths:
       - "index.html"
       - "CG-os.html"
+      - "404.html"
       - "artemis-blueprint.md"
       - "assets/**"
       - "docs/advanced-campaign-system.md"
@@ -45,7 +46,7 @@ jobs:
           python3 security/validate_static_site.py --site-root .
           install -d _site
           install -m 0644 index.html _site/index.html
-          install -m 0644 CG-os.html artemis-blueprint.md robots.txt sitemap.xml _site/
+          install -m 0644 CG-os.html 404.html artemis-blueprint.md robots.txt sitemap.xml _site/
           if [ -f .nojekyll ]; then install -m 0644 .nojekyll _site/.nojekyll; fi
           if [ -d assets ]; then cp -R assets _site/assets; fi
           install -d _site/docs

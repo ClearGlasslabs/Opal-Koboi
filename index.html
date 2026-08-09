@@ -11,6 +11,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.clearglassinc.com/">
 <link rel="canonical" href="https://www.clearglassinc.com/">
+<link rel="icon" href="assets/clearglass-logo.svg" type="image/svg+xml">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&amp;family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&amp;family=JetBrains+Mono:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
 <script src="assets/js/future-buttons.js" defer></script>
 <style>
@@ -31,10 +32,13 @@
   --nav-h: 72px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 1rem)}
 body{font-family:var(--font-body);color:var(--text);background:var(--void);min-height:100vh;overflow-x:hidden}
+.skip-link{position:fixed;top:.75rem;left:.75rem;z-index:1000;padding:.75rem 1rem;border-radius:8px;background:var(--cyan);color:var(--void);font-weight:700;text-decoration:none;transform:translateY(-200%)}
+.skip-link:focus{transform:translateY(0);outline:3px solid var(--gold);outline-offset:3px}
 .bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);background-size:64px 64px}
 #starfield{position:fixed;inset:0;z-index:0;pointer-events:none}
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(1.5rem,4vw,3rem);background:rgba(3,7,18,.78);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;min-height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top) max(clamp(1rem,4vw,3rem),env(safe-area-inset-right)) 0 max(clamp(1rem,4vw,3rem),env(safe-area-inset-left));background:rgba(3,7,18,.88);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
 .nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none}
 .nav-logo{width:clamp(150px,18vw,220px);height:auto;max-height:52px;object-fit:contain;filter:drop-shadow(0 0 14px rgba(0,229,255,.16))}
 .nav-brand-text{font-family:var(--font-display);font-weight:800;font-size:clamp(.9rem,1.4vw,1.15rem);letter-spacing:.06em;color:var(--gold)}
@@ -42,12 +46,13 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
 .nav-links{display:flex;gap:clamp(1rem,2.5vw,2rem);align-items:center}
 .nav-links a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
 .nav-links a:hover{color:var(--cyan)}
+.nav a:focus-visible,.nav-mobile:focus-visible,.mobile-menu a:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
 .nav-cta{padding:9px 22px;border-radius:999px;border:1px solid var(--cyan);color:var(--cyan);font-size:.85rem;transition:all .2s}
 .nav-cta:hover{background:rgba(0,229,255,.08)}
-.nav-mobile{display:none;background:none;border:none;color:var(--text);font-size:1.4rem;cursor:pointer;padding:4px 8px}
-.mobile-menu{display:none;position:fixed;top:var(--nav-h);left:0;right:0;background:rgba(3,7,18,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:1.5rem 2rem;flex-direction:column;gap:1rem;z-index:90}
+.nav-mobile{display:none;align-items:center;justify-content:center;min-width:44px;min-height:44px;background:none;border:1px solid transparent;border-radius:8px;color:var(--text);font-size:1.4rem;cursor:pointer;padding:4px 8px}
+.mobile-menu{display:none;position:fixed;top:calc(var(--nav-h) + env(safe-area-inset-top));left:0;right:0;max-height:calc(100dvh - var(--nav-h) - env(safe-area-inset-top));overflow-y:auto;background:rgba(3,7,18,.96);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:1.5rem max(1rem,env(safe-area-inset-right)) calc(1.5rem + env(safe-area-inset-bottom)) max(1rem,env(safe-area-inset-left));flex-direction:column;gap:.5rem;z-index:90}
 .mobile-menu.open{display:flex}
-.mobile-menu a{color:var(--muted);text-decoration:none;font-size:1rem}
+.mobile-menu a{display:flex;align-items:center;min-height:44px;color:var(--muted);text-decoration:none;font-size:1rem}
 .mobile-menu a:hover{color:var(--cyan)}
 .section{padding:clamp(4.5rem,8vw,7.5rem) clamp(1.5rem,5vw,4rem);max-width:1280px;margin:0 auto;position:relative;z-index:1}
 .section-label{font-family:var(--font-display);font-size:.65rem;letter-spacing:.22em;color:var(--cyan);margin-bottom:1rem}
@@ -64,7 +69,7 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
 .hero-stats{display:flex;gap:clamp(2.2rem,5vw,3.8rem);margin-top:3.8rem;padding-top:2.6rem;border-top:1px solid var(--border);flex-wrap:wrap}
 .hero-stat-num{font-family:var(--font-display);font-size:clamp(1.7rem,2.6vw,2.35rem);font-weight:800;color:var(--gold);transition:color .2s}
 .hero-stat-label{font-family:var(--font-mono);font-size:.65rem;color:var(--muted);margin-top:4px}
-.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:1.6rem;margin-top:2.2rem}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:1.6rem;margin-top:2.2rem}
 .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:1.65rem;transition:transform .45s cubic-bezier(0.23,1,0.32,1),border-color .3s,box-shadow .4s}
 .card:hover{transform:translateY(-6px);border-color:var(--border-h);box-shadow:0 20px 50px rgba(0,0,0,.4)}
 .card h3{font-family:var(--font-display);font-size:1.25rem;margin-bottom:1.1rem;color:var(--cyan)}
@@ -72,7 +77,7 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
 .card li{padding:.55rem 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:.95rem}
 .card li:last-child{border-bottom:none}
 .card li:before{content:"→ ";color:var(--lime);font-weight:700}
-.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;margin-top:2rem}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:2rem;margin-top:2rem}
 .pricing-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center}
 .pricing-card h3{font-size:1.5rem;margin-bottom:1rem}
 .price{font-size:2.5rem;font-weight:bold;color:var(--cyan);margin:1rem 0}
@@ -96,8 +101,11 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
   .contact-grid{grid-template-columns:1fr}
   .hero-stats{gap:2rem}
   .journey-head{display:block}.journey-head p{margin-top:.8rem}.journey-steps{grid-template-columns:1fr}.journey-step{min-height:140px}
+  .hero{min-height:auto;padding-top:calc(var(--nav-h) + env(safe-area-inset-top) + 3rem)}
+  .hero-actions{align-items:stretch;flex-direction:column}.hero-actions .btn-primary,.hero-actions .btn-ghost{width:100%;margin-left:0}
 }
 @media (prefers-reduced-motion: reduce) {
+  html{scroll-behavior:auto}
   .card, .btn-primary, .btn-ghost {transition: none !important}
   #starfield {display: none}
 }
@@ -117,11 +125,12 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
 </script>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
 <div class="bg-grid"></div>
-<canvas id="starfield"></canvas>
+<canvas id="starfield" aria-hidden="true"></canvas>
 
-<nav class="nav">
-  <a class="nav-brand" href="#" aria-label="ClearGlass Inc. home">
+<nav class="nav" aria-label="Primary navigation">
+  <a class="nav-brand" href="index.html" aria-label="ClearGlass Inc. home">
     <img class="nav-logo" src="assets/clearglass-logo.svg" alt="ClearGlass Inc." width="220" height="52">
   </a>
   
@@ -135,10 +144,10 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
     <a href="CG-os.html" class="nav-cta">FLAGSHIP PRODUCT</a>
   </div>
   
-  <button class="nav-mobile" aria-label="Toggle menu" aria-expanded="false">☰</button>
+  <button class="nav-mobile" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">☰</button>
 </nav>
 
-<div class="mobile-menu" id="mobile-menu">
+<div class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
   <a href="#about">About</a>
   <a href="#platforms">Platforms</a>
   <a href="CG-os.html">CG-OS Flagship</a>
@@ -148,12 +157,13 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
   <a href="CG-os.html" class="nav-cta" style="display:inline-block;width:fit-content">FLAGSHIP PRODUCT</a>
 </div>
 
+<main id="main-content">
 <section class="hero">
   <div>
     <h1><span class="accent">Self-Evolving<br>AI Intelligence</span><br>for Municipal<br><span class="gold">Cyber Dominance.</span></h1>
     <p class="hero-sub">ClearGlassInc Artemis fuses OSINT, ontology-driven investigations, AI copilots, human-approved autonomous workflows, and audited municipal cybersecurity operations into one executive-grade platform.</p>
     
-    <div style="display:flex;flex-wrap:wrap;gap:12px">
+    <div class="hero-actions" style="display:flex;flex-wrap:wrap;gap:12px">
       <a href="CG-os.html" class="btn-primary">OPEN CG-OS FLAGSHIP →</a>
       <a href="#contact" class="btn-ghost">REQUEST BRIEFING</a>
     </div>
@@ -311,7 +321,7 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
   <div class="contact-grid">
     <div>
       <p><strong>📍 Headquarters</strong><br>Burlington, Ontario, Canada<br>43.3255°N, 79.7990°W</p>
-      <p style="margin-top:1.25rem"><strong>✉️ Email</strong><br>info@clearglassinc.com</p>
+      <p style="margin-top:1.25rem"><strong>✉️ Email</strong><br><a class="context-link" href="mailto:info@clearglassinc.com">info@clearglassinc.com</a></p>
     </div>
     <div>
       <div class="compliance-row">
@@ -325,6 +335,7 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
   </div>
 </section>
 
+</main>
 <footer class="footer">
   <p>© 2026 ClearGlass Inc. All rights reserved. Burlington, Ontario, Canada.</p>
   <p style="margin-top:.5rem">clearglassinc.com • intelligence for the public sector</p>
@@ -333,7 +344,8 @@ body{font-family:var(--font-body);color:var(--text);background:var(--void);min-h
 <script>
 // Advanced Interactive Starfield + Intelligence Field
 const canvas = document.getElementById('starfield');
-const ctx = canvas.getContext('2d', { alpha: true });
+const ctx = canvas?.getContext('2d', { alpha: true });
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 let stars = [];
 let shootingStars = [];
@@ -375,6 +387,7 @@ function spawnShootingStar() {
 }
 
 function draw() {
+  if (!ctx || reduceMotion.matches) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
   // Draw constellation lines (intelligence network)
@@ -500,6 +513,11 @@ function animateCounters() {
 
 // Scroll reveal
 function initScrollReveal() {
+  const revealTargets = document.querySelectorAll('.card, .section');
+  if (reduceMotion.matches || !('IntersectionObserver' in window)) {
+    revealTargets.forEach(el => el.classList.add('in-view'));
+    return;
+  }
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -509,7 +527,7 @@ function initScrollReveal() {
     });
   }, { threshold: 0.15, rootMargin: "0px 0px -60px 0px" });
 
-  document.querySelectorAll('.card, .section').forEach(el => {
+  revealTargets.forEach(el => {
     el.style.transition = 'opacity .7s cubic-bezier(0.23,1,0.32,1), transform .7s cubic-bezier(0.23,1,0.32,1)';
     el.style.opacity = '0';
     el.style.transform = 'translateY(24px)';
@@ -529,32 +547,47 @@ function initMobileMenu() {
   
   if (!btn || !menu) return;
   
-  btn.addEventListener('click', () => {
-    const isOpen = menu.classList.toggle('open');
+  const setOpen = (isOpen, returnFocus = false) => {
+    menu.classList.toggle('open', isOpen);
     btn.setAttribute('aria-expanded', isOpen);
-    btn.innerHTML = isOpen ? '✕' : '☰';
+    btn.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+    btn.textContent = isOpen ? '✕' : '☰';
+    if (isOpen) menu.querySelector('a')?.focus();
+    if (!isOpen && returnFocus) btn.focus();
+  };
+
+  btn.addEventListener('click', () => {
+    setOpen(btn.getAttribute('aria-expanded') !== 'true');
   });
   
   // Close on link click
   menu.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
-      menu.classList.remove('open');
-      btn.setAttribute('aria-expanded', 'false');
-      btn.innerHTML = '☰';
+      setOpen(false);
     });
   });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') setOpen(false, true);
+  });
+  document.addEventListener('pointerdown', event => {
+    if (btn.getAttribute('aria-expanded') === 'true' && !menu.contains(event.target) && !btn.contains(event.target)) setOpen(false);
+  });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 720 && btn.getAttribute('aria-expanded') === 'true') setOpen(false);
+  }, { passive: true });
 }
 
 // Smooth scroll for nav
 function initSmoothScroll() {
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  document.querySelectorAll('a[href^="#"]:not([href="#"])').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
       const target = document.querySelector(this.getAttribute('href'));
       if (target) {
         e.preventDefault();
         const offset = 80;
         const top = target.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top, behavior: 'smooth' });
+        window.scrollTo({ top, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
       }
     });
   });
@@ -562,6 +595,7 @@ function initSmoothScroll() {
 
 // Occasional shooting stars
 function startShootingStars() {
+  if (reduceMotion.matches) return;
   setInterval(() => {
     if (Math.random() > 0.6) spawnShootingStar();
   }, 2400);
@@ -569,42 +603,31 @@ function startShootingStars() {
 
 // Init everything
 function init() {
-  resizeCanvas();
-  createStars(Math.min(185, Math.floor(window.innerWidth / 7.5)));
-  
-  window.addEventListener('resize', () => {
+  if (canvas && ctx && !reduceMotion.matches) {
     resizeCanvas();
     createStars(Math.min(185, Math.floor(window.innerWidth / 7.5)));
-  });
-  
-  initMouse();
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      createStars(Math.min(185, Math.floor(window.innerWidth / 7.5)));
+    }, { passive: true });
+    initMouse();
+    startShootingStars();
+    draw();
+    setTimeout(spawnShootingStar, 1200);
+  }
+
   initScrollReveal();
   initMobileMenu();
   initSmoothScroll();
-  startShootingStars();
-  
-  // Boot canvas
-  draw();
-  
+
   // Animate stats after short delay (hero visible)
-  setTimeout(() => {
-    animateCounters();
-  }, 680);
-  
-  // Gentle initial shooting star
-  setTimeout(spawnShootingStar, 1200);
-  
-  // Keyboard accessibility for mobile button
-  const mobileBtn = document.querySelector('.nav-mobile');
-  if (mobileBtn) {
-    mobileBtn.setAttribute('tabindex', '0');
-    mobileBtn.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        mobileBtn.click();
-      }
+  if (reduceMotion.matches) {
+    document.querySelectorAll('.hero-stat-num').forEach(counter => {
+      const target = Number.parseInt(counter.dataset.target, 10);
+      counter.textContent = target + (target === 100 ? '%' : '');
     });
   }
+  else setTimeout(animateCounters, 680);
 }
 
 window.addEventListener('load', init);
