@@ -19,10 +19,16 @@ from typing import Iterable
 
 ACTION_RE = re.compile(r"^\s*uses:\s*([^\s#]+)", re.MULTILINE)
 FULL_SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
-EVENT_LINE_RE = re.compile(
-    r"^\s{0,4}(pull_request_target|pull_request|issue_comment|issues|"
-    r"discussion|discussion_comment|workflow_run)\s*:",
-    re.MULTILINE,
+UNTRUSTED_EVENT_NAMES = frozenset(
+    {
+        "pull_request_target",
+        "pull_request",
+        "issue_comment",
+        "issues",
+        "discussion",
+        "discussion_comment",
+        "workflow_run",
+    }
 )
 RUN_BLOCK_RE = re.compile(r"^\s*run:\s*[|>]\s*\n(?P<body>(?:^[ \t]+.*\n?)*)", re.MULTILINE)
 DANGEROUS_EXPR_RE = re.compile(
@@ -61,11 +67,39 @@ def contains_untrusted_checkout(text: str) -> bool:
     return "actions/checkout@" in text and any(pattern in text for pattern in patterns)
 
 
+def workflow_events(text: str) -> set[str]:
+    """Return only event keys declared inside the workflow's top-level ``on`` block.
+
+    Permission names such as ``issues: write`` are also valid event names, so a
+    whole-file regular expression cannot safely distinguish the two contexts.
+    """
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        match = re.match(r"^on:\s*(.*?)(?:\s+#.*)?$", line)
+        if not match:
+            continue
+        inline = match.group(1).strip()
+        if inline.startswith("[") and inline.endswith("]"):
+            return {item.strip() for item in inline[1:-1].split(",") if item.strip()}
+        if inline:
+            return {inline}
+
+        events: set[str] = set()
+        for child in lines[index + 1 :]:
+            if child and not child[0].isspace():
+                break
+            child_match = re.match(r"^\s{2}([A-Za-z_]+)\s*:", child)
+            if child_match:
+                events.add(child_match.group(1))
+        return events
+    return set()
+
+
 def scan_workflow(path: Path, policy: dict) -> list[Finding]:
     text = path.read_text(encoding="utf-8")
     findings: list[Finding] = []
     relative = path.as_posix()
-    events = set(EVENT_LINE_RE.findall(text))
+    events = workflow_events(text)
     untrusted_events = events.intersection(policy["untrusted_events"])
 
     if "pull_request_target" in events:
