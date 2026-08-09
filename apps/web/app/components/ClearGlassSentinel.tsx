@@ -47,10 +47,16 @@ export function ClearGlassSentinel() {
   const launcherRef = useRef<HTMLButtonElement>(null)
   const titleId = useId()
 
-  useEffect(() => setDismissed(sessionStorage.getItem('sentinel-dismissed') === 'true'), [])
+  useEffect(() => {
+    const restoreDismissal = window.setTimeout(() => {
+      setDismissed(sessionStorage.getItem('sentinel-dismissed') === 'true')
+    }, 0)
+    return () => window.clearTimeout(restoreDismissal)
+  }, [])
   useEffect(() => {
     if (!open) return
     const prior = document.activeElement as HTMLElement | null
+    const launcher = launcherRef.current
     dialogRef.current?.querySelector<HTMLElement>('button, input')?.focus()
     const onKey = (event: globalThis.KeyboardEvent) => {
       if (event.key === 'Escape') setOpen(false)
@@ -64,7 +70,7 @@ export function ClearGlassSentinel() {
     document.addEventListener('keydown', onKey)
     const overflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = overflow; (prior ?? launcherRef.current)?.focus() }
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = overflow; (prior ?? launcher)?.focus() }
   }, [open])
 
   const send = (value: string) => {
