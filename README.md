@@ -1,3 +1,11 @@
+<!-- CLEARGLASS-BRAND:START -->
+<p align="center">
+  <a href="https://www.clearglassinc.com/">
+    <img src="https://raw.githubusercontent.com/ClearGlasslabs/ClearGlassInc./brand-assets/clearglass-seal.jpg" alt="ClearGlass Inc." width="360" />
+  </a>
+</p>
+<!-- CLEARGLASS-BRAND:END -->
+
 # ClearGlassInc Artemis Browser Intelligence Assistant
 
 ClearGlassInc Artemis is an open-source, lawful defensive browser intelligence and research assistant for security teams that need high-assurance source tracking, AI-assisted synthesis, and audited workflows. It is designed for **browser security**, **AI research automation**, and **cybersecurity workflow automation** without offensive, deceptive, or unauthorized-access features.
