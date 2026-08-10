@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "handled_at": "2026-08-10T05:43:03.380769+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Financial Influence Watchdog CI",
+      "run_id": 31343665143,
+      "run_attempt": 1,
+      "commit_sha": "23ebd395dfd7dbea0f06d9428f6bdf8b91d35558",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 91,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31343665143",
+      "diagnostics": [
+        {
+          "job": "Python 3.11",
+          "job_id": 93321492634,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        },
+        {
+          "job": "Python 3.10",
+          "job_id": 93321492655,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        },
+        {
+          "job": "Python 3.12",
+          "job_id": 93321492671,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        },
+        {
+          "job": "Python 3.13",
+          "job_id": 93321492685,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-10T05:43:05.955777+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 31343665113,
+      "run_attempt": 1,
+      "commit_sha": "23ebd395dfd7dbea0f06d9428f6bdf8b91d35558",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 92,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31343665113",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 93321492707,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        },
+        {
+          "job": "sast-secrets-dependencies",
+          "job_id": 93321492725,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-10T05:43:08.543169+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 31343652140,
+      "run_attempt": 1,
+      "commit_sha": "eef60a1103c8d5b8ba87662750c6665425fb4c27",
+      "branch": "codex/develop-clearglass-federal-cyber-control-plane",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 93,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31343652140",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 93321456478,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        },
+        {
+          "job": "sast-secrets-dependencies",
+          "job_id": 93321456503,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-10T05:43:12.455128+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Financial Influence Watchdog CI",
+      "run_id": 31343652139,
+      "run_attempt": 1,
+      "commit_sha": "eef60a1103c8d5b8ba87662750c6665425fb4c27",
+      "branch": "codex/develop-clearglass-federal-cyber-control-plane",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 94,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31343652139",
+      "diagnostics": [
+        {
+          "job": "Python 3.13",
+          "job_id": 93321456602,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        },
+        {
+          "job": "Python 3.10",
+          "job_id": 93321456609,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        },
+        {
+          "job": "Python 3.12",
+          "job_id": 93321456610,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        },
+        {
+          "job": "Python 3.11",
+          "job_id": 93321456612,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-10T05:43:15.468162+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 31337264027,
+      "run_attempt": 1,
+      "commit_sha": "3f8d29bca1b30d939df1f9346dfbee54aa3315d5",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 95,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31337264027",
+      "diagnostics": [
+        {
+          "job": "sast-secrets-dependencies",
+          "job_id": 93305055244,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        },
+        {
+          "job": "web",
+          "job_id": 93305055398,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    }
+  ]
+}
