@@ -5,28 +5,27 @@ import { getPublicSnapshot } from "../lib/live/snapshot";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://clearglasslabs.github.io/Opal-Koboi/"),
-  title: "ClearGlassInc Artemis — Human-Governed Intelligence",
+  title: "Business Productivity Plans | ClearGlassInc Artemis",
   description:
-    "Fuse every trusted signal into governed action with ClearGlassInc Artemis, the intelligence fabric for mission-critical operations.",
+    "Flexible CAD business productivity plans with secure collaboration, per-user pricing, and a free 14-day trial.",
   keywords: [
-    "agentic AI",
-    "human-governed AI",
-    "intelligence systems",
-    "ontology",
+    "business productivity plans",
+    "cloud collaboration",
+    "business subscriptions",
     "ClearGlassInc Artemis",
   ],
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Artemis Journal — Intelligence, made legible.",
+    title: "Flexible business productivity plans | ClearGlassInc Artemis",
     description:
-      "Research and field notes from the frontier of governed intelligence systems.",
+      "Secure cloud productivity and business-grade tools that scale with your team.",
     type: "website",
     url: "/",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Artemis Journal",
-    description: "Clarity at the edge of possibility.",
+    title: "ClearGlassInc Artemis Business Plans",
+    description: "Flexible productivity plans that scale with your team.",
   },
   other: {
     "dcterms.rightsHolder": "ClearGlassInc Artemis",
