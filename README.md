@@ -118,6 +118,9 @@ The landing page is implemented in `apps/web/app/page.tsx`. Add real screenshots
 
 The executable platform core now includes a tenant-isolated agent registry, typed replay-resistant event bus, deterministic policy engine, connector contracts, and explicit domain boundaries. For the end-to-end design—including Palantir Gotham, Foundry, AIP, Apollo, ontology, self-improvement controls, interface contracts, and a mission walkthrough—see [`docs/artemis-platform-architecture.md`](./docs/artemis-platform-architecture.md).
 
+The AEGIS Federal evidence-graph implementation and its production architecture
+are documented in [`docs/aegis-federal-control-plane.md`](./docs/aegis-federal-control-plane.md).
+
 ---
 
 © 2026 ClearGlass Inc. Defensive research use only.
