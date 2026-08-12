@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "tests": [
+    {
+      "workflow": "Financial Influence Watchdog CI",
+      "job": "Python 3.12",
+      "observed_failures": 2,
+      "first_flagged_at": "2026-08-12T05:45:20.753479+00:00",
+      "status": "candidate"
+    },
+    {
+      "workflow": "Financial Influence Watchdog CI",
+      "job": "Python 3.10",
+      "observed_failures": 2,
+      "first_flagged_at": "2026-08-12T05:45:20.753483+00:00",
+      "status": "candidate"
+    },
+    {
+      "workflow": "Financial Influence Watchdog CI",
+      "job": "Python 3.11",
+      "observed_failures": 2,
+      "first_flagged_at": "2026-08-12T05:45:20.753485+00:00",
+      "status": "candidate"
+    },
+    {
+      "workflow": "Financial Influence Watchdog CI",
+      "job": "Python 3.13",
+      "observed_failures": 2,
+      "first_flagged_at": "2026-08-12T05:45:20.753487+00:00",
+      "status": "candidate"
+    },
+    {
+      "workflow": "Security assurance",
+      "job": "web",
+      "observed_failures": 3,
+      "first_flagged_at": "2026-08-12T05:45:20.753488+00:00",
+      "status": "candidate"
+    },
+    {
+      "workflow": "Security assurance",
+      "job": "sast-secrets-dependencies",
+      "observed_failures": 3,
+      "first_flagged_at": "2026-08-12T05:45:20.753490+00:00",
+      "status": "candidate"
+    }
+  ]
+}
