@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "start": "node .next/standalone/server.js",
-    "build": "next build && mkdir -p .next/standalone/.next && cp -R .next/static .next/standalone/.next/static",
+    "build": "next build && find .next -type f -name '*.map' -delete && mkdir -p .next/standalone/.next && cp -R .next/static .next/standalone/.next/static",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
