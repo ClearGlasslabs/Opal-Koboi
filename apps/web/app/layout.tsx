@@ -4,33 +4,33 @@ import { LivePageShell } from "./components/live/LivePageShell";
 import { getPublicSnapshot } from "../lib/live/snapshot";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://clearglasslabs.github.io/Opal-Koboi/"),
-  title: "Business Productivity Plans | ClearGlassInc Artemis",
+  metadataBase: new URL("https://www.clearglassinc.com/"),
+  applicationName: "ClearGlass Inc.",
+  title: "ClearGlass Inc. | Governed AI Automation & Cybersecurity",
   description:
-    "Flexible CAD business productivity plans with secure collaboration, per-user pricing, and a free 14-day trial.",
-  keywords: [
-    "business productivity plans",
-    "cloud collaboration",
-    "business subscriptions",
-    "ClearGlassInc Artemis",
-  ],
+    "ClearGlass Inc. builds governed AI automation, cybersecurity, agent systems, OSINT workflows, and enterprise technology architectures with human approval and auditability.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Flexible business productivity plans | ClearGlassInc Artemis",
+    title: "ClearGlass Inc. | Governed AI Automation & Cybersecurity",
     description:
-      "Secure cloud productivity and business-grade tools that scale with your team.",
+      "Governed AI automation, cybersecurity, agent systems, OSINT workflows, and enterprise technology architecture from ClearGlass Inc.",
     type: "website",
     url: "/",
+    siteName: "ClearGlass Inc.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ClearGlassInc Artemis Business Plans",
-    description: "Flexible productivity plans that scale with your team.",
+    title: "ClearGlass Inc. | Governed AI Automation & Cybersecurity",
+    description:
+      "Governed AI automation, cybersecurity, agent systems, OSINT workflows, and enterprise technology architecture.",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
   other: {
-    "dcterms.rightsHolder": "ClearGlassInc Artemis",
-    "dcterms.license": "https://clearglasslabs.github.io/Opal-Koboi/legal",
-    "content-origin": "ClearGlassInc Artemis",
+    "dcterms.rightsHolder": "ClearGlass Inc.",
+    "content-origin": "ClearGlass Inc.",
   },
 };
 
