@@ -1,10 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Legal, privacy and acceptable use | ClearGlassInc Artemis",
+export const metadata: Metadata = {
+  title: "Legal, privacy and acceptable use | ClearGlass Inc.",
   description:
-    "ClearGlassInc Artemis legal, privacy, copyright, acceptable-use and takedown templates.",
+    "ClearGlass Inc. legal, privacy, copyright, acceptable-use and takedown templates pending legal review.",
   alternates: { canonical: "/legal" },
+  robots: {
+    index: false,
+    follow: true,
+  },
 };
 
 export default function LegalPage() {
