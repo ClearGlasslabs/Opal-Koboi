@@ -10,6 +10,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import hmac
+import ipaddress
 import json
 import os
 import re
@@ -73,7 +74,20 @@ class ResearchSource(StrictModel):
         host = parsed.hostname or ""
         if parsed.scheme != "https":
             raise ValueError("sources must use https")
-        if host in {"localhost", "127.0.0.1", "0.0.0.0"} or host.endswith(".local"):
+        if host == "localhost" or host.endswith(".local"):
+            raise ValueError("local/private sources are not OSINT inputs")
+        try:
+            address = ipaddress.ip_address(host)
+        except ValueError:
+            address = None
+        if address is not None and (
+            address.is_loopback
+            or address.is_private
+            or address.is_link_local
+            or address.is_unspecified
+            or address.is_reserved
+            or address.is_multicast
+        ):
             raise ValueError("local/private sources are not OSINT inputs")
         return value
 

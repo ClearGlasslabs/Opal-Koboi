@@ -151,15 +151,14 @@ def scan_workflow(path: Path, policy: dict) -> list[Finding]:
                 )
             )
 
-    if untrusted_events and re.search(r"^\s*id-token:\s*write\s*$", text, re.MULTILINE):
-        offset = re.search(r"^\s*id-token:\s*write\s*$", text, re.MULTILINE)
-        assert offset is not None
+    oidc_match = re.search(r"^\s*id-token:\s*write\s*$", text, re.MULTILINE)
+    if untrusted_events and oidc_match is not None:
         findings.append(
             Finding(
                 "CG-ACT-004",
                 "critical",
                 relative,
-                line_number(text, offset.start()),
+                line_number(text, oidc_match.start()),
                 "OIDC token minting is enabled for a workflow reachable from an untrusted event.",
                 "Issue OIDC tokens only in protected deployment jobs triggered from trusted refs and bound to a protected GitHub Environment.",
             )
@@ -227,7 +226,8 @@ def scan_workflow(path: Path, policy: dict) -> list[Finding]:
             continue
 
         indent_match = re.match(r"^(?P<indent>\s*)-\s+", lines[step_start])
-        assert indent_match is not None
+        if indent_match is None:
+            continue
         step_indent = len(indent_match.group("indent"))
         step_end = step_start + 1
         while step_end < len(lines):

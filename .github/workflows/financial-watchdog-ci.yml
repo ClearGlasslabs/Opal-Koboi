@@ -61,7 +61,12 @@ jobs:
         run: ruff check intelligence tests/test_entity_extractor.py
 
       - name: Run focused test suite with coverage gate
-        run: python -m pytest -q tests/test_entity_extractor.py --cov=intelligence --cov-report=term-missing --cov-fail-under=75
+        run: >-
+          python -m pytest -q tests/test_entity_extractor.py
+          --cov=intelligence.entity_extractor
+          --cov=intelligence.financial_watchdog_agent
+          --cov-report=term-missing
+          --cov-fail-under=75
 
       - name: Validate CLI installation
         run: clearglass-watchdog --help >/dev/null
