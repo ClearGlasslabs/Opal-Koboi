@@ -1,0 +1,49 @@
+name: SEO Quality
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "CG-os.html"
+      - "robots.txt"
+      - "sitemap.xml"
+      - "assets/**"
+      - "tools/seo_audit.py"
+      - "docs/seo/**"
+      - ".github/workflows/seo-quality.yml"
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "CG-os.html"
+      - "robots.txt"
+      - "sitemap.xml"
+      - "assets/**"
+      - "tools/seo_audit.py"
+      - ".github/workflows/seo-quality.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seo-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Audit search metadata and indexability
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Run deterministic SEO audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/seo_audit.py --site-root . --format github
