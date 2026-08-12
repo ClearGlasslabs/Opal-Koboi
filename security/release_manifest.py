@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import subprocess  # nosec B404 - fixed executable/argv; shell execution is never used.
+import subprocess  # nosec B404
 from pathlib import Path
 
 
@@ -14,7 +14,8 @@ def main() -> int:
     parser.add_argument("--output", default="SHA256SUMS")
     args = parser.parse_args()
     output = Path(args.output)
-    tracked = subprocess.run(  # nosec B603,B607 - constant git command with shell=False.
+    # The executable and all arguments are constants; shell execution is not used.
+    tracked = subprocess.run(  # nosec B603
         ["git", "ls-files", "-z"], check=True, capture_output=True
     ).stdout.split(b"\0")
     lines = []
