@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "tests": [
+    {
+      "workflow": "Security assurance",
+      "job": "web",
+      "observed_failures": 3,
+      "first_flagged_at": "2026-08-15T04:46:32.093174+00:00",
+      "status": "candidate"
+    },
+    {
+      "workflow": "Security assurance",
+      "job": "sast-secrets-dependencies",
+      "observed_failures": 2,
+      "first_flagged_at": "2026-08-15T04:46:32.093179+00:00",
+      "status": "candidate"
+    }
+  ]
+}

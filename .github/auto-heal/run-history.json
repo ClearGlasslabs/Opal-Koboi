@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "handled_at": "2026-08-15T04:46:24.442531+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "npm_and_yarn in /apps/web for nanoid - Update #1525804669",
+      "run_id": 31828368569,
+      "run_attempt": 1,
+      "commit_sha": "f11634416ba952e0ccb309f2c10b53d18425a5ca",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 116,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31828368569",
+      "diagnostics": [
+        {
+          "job": "Dependabot",
+          "job_id": 94857892067,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-15T04:46:26.352255+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 31828199086,
+      "run_attempt": 1,
+      "commit_sha": "f11634416ba952e0ccb309f2c10b53d18425a5ca",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 117,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31828199086",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 94857350628,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-15T04:46:28.352381+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 31828169681,
+      "run_attempt": 1,
+      "commit_sha": "129de520a24dc2218635f1c090479413ea6f5650",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 118,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31828169681",
+      "diagnostics": [
+        {
+          "job": "sast-secrets-dependencies",
+          "job_id": 94857241454,
+          "conclusion": "cancelled",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        },
+        {
+          "job": "web",
+          "job_id": 94857241550,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-15T04:46:29.883876+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "npm_and_yarn in /apps/web for nanoid - Update #1525801266",
+      "run_id": 31828150951,
+      "run_attempt": 1,
+      "commit_sha": "718641919f794f1b601a24d302f964f4514ed665",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 119,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31828150951",
+      "diagnostics": [
+        {
+          "job": "Dependabot",
+          "job_id": 94857178901,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-15T04:46:32.093083+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 31828143589,
+      "run_attempt": 1,
+      "commit_sha": "718641919f794f1b601a24d302f964f4514ed665",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 120,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31828143589",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 94857148616,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        },
+        {
+          "job": "sast-secrets-dependencies",
+          "job_id": 94857148644,
+          "conclusion": "cancelled",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    }
+  ]
+}
