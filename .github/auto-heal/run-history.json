@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "handled_at": "2026-08-17T04:56:52.636148+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "npm_and_yarn in /apps/web for nanoid - Update #1526328553",
+      "run_id": 31885327696,
+      "run_attempt": 1,
+      "commit_sha": "465c96c8c822785ad8f139f1326d45544ecf642b",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31885327696",
+      "diagnostics": [
+        {
+          "job": "Dependabot",
+          "job_id": 95013685453,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-17T04:56:53.846953+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Deploy Next.js site to Pages",
+      "run_id": 31885322010,
+      "run_attempt": 1,
+      "commit_sha": "465c96c8c822785ad8f139f1326d45544ecf642b",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31885322010",
+      "diagnostics": [
+        {
+          "job": "build",
+          "job_id": 95013671310,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-17T04:56:55.026345+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Repository Health",
+      "run_id": 31885322311,
+      "run_attempt": 1,
+      "commit_sha": "465c96c8c822785ad8f139f1326d45544ecf642b",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31885322311",
+      "diagnostics": [
+        {
+          "job": "validate / Validate changed source and configuration",
+          "job_id": 95013672075,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-17T04:56:56.268368+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Artemis Supply Chain Guard",
+      "run_id": 31885322002,
+      "run_attempt": 1,
+      "commit_sha": "465c96c8c822785ad8f139f1326d45544ecf642b",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31885322002",
+      "diagnostics": [
+        {
+          "job": "CI trust-boundary policy",
+          "job_id": 95013671295,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-17T04:56:57.652565+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 31885321993,
+      "run_attempt": 1,
+      "commit_sha": "465c96c8c822785ad8f139f1326d45544ecf642b",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31885321993",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 95013671285,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        },
+        {
+          "job": "sast-secrets-dependencies",
+          "job_id": 95013671337,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    }
+  ]
+}
