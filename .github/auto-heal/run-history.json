@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "handled_at": "2026-08-18T04:50:23.695586+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Artemis Supply Chain Guard",
+      "run_id": 31999180869,
+      "run_attempt": 1,
+      "commit_sha": "465c96c8c822785ad8f139f1326d45544ecf642b",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 126,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31999180869",
+      "diagnostics": [
+        {
+          "job": "CI trust-boundary policy",
+          "job_id": 95296188293,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-18T04:50:25.468497+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "npm_and_yarn in /apps/web for nanoid - Update #1526328553",
+      "run_id": 31885327696,
+      "run_attempt": 1,
+      "commit_sha": "465c96c8c822785ad8f139f1326d45544ecf642b",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31885327696",
+      "diagnostics": [
+        {
+          "job": "Dependabot",
+          "job_id": 95013685453,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-18T04:50:27.303242+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Deploy Next.js site to Pages",
+      "run_id": 31885322010,
+      "run_attempt": 1,
+      "commit_sha": "465c96c8c822785ad8f139f1326d45544ecf642b",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31885322010",
+      "diagnostics": [
+        {
+          "job": "build",
+          "job_id": 95013671310,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-18T04:50:28.987086+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Repository Health",
+      "run_id": 31885322311,
+      "run_attempt": 1,
+      "commit_sha": "465c96c8c822785ad8f139f1326d45544ecf642b",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31885322311",
+      "diagnostics": [
+        {
+          "job": "validate / Validate changed source and configuration",
+          "job_id": 95013672075,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-18T04:50:30.825257+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Artemis Supply Chain Guard",
+      "run_id": 31885322002,
+      "run_attempt": 1,
+      "commit_sha": "465c96c8c822785ad8f139f1326d45544ecf642b",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/31885322002",
+      "diagnostics": [
+        {
+          "job": "CI trust-boundary policy",
+          "job_id": 95013671295,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    }
+  ]
+}
