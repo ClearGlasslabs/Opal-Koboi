@@ -68,11 +68,6 @@ def contains_untrusted_checkout(text: str) -> bool:
 
 
 def workflow_events(text: str) -> set[str]:
-    """Return only event keys declared inside the workflow's top-level ``on`` block.
-
-    Permission names such as ``issues: write`` are also valid event names, so a
-    whole-file regular expression cannot safely distinguish the two contexts.
-    """
     lines = text.splitlines()
     for index, line in enumerate(lines):
         match = re.match(r"^on:\s*(.*?)(?:\s+#.*)?$", line)
@@ -105,108 +100,37 @@ def scan_workflow(path: Path, policy: dict) -> list[Finding]:
     if "pull_request_target" in events:
         offset = text.find("pull_request_target")
         severity = "critical" if "actions/checkout@" in text else "high"
-        findings.append(
-            Finding(
-                "CG-ACT-001",
-                severity,
-                relative,
-                line_number(text, offset),
-                "`pull_request_target` executes in the privileged base-repository context.",
-                "Use `pull_request` for validation or split privileged work into a separately reviewed `workflow_run` job that never executes PR-controlled code or artifacts.",
-            )
-        )
+        findings.append(Finding("CG-ACT-001", severity, relative, line_number(text, offset), "`pull_request_target` executes in the privileged base-repository context.", "Use `pull_request` for validation or split privileged work into a separately reviewed `workflow_run` job that never executes PR-controlled code or artifacts."))
 
     if untrusted_events and contains_untrusted_checkout(text):
-        offset = min(
-            (text.find(p) for p in (
-                "github.event.pull_request.head.sha",
-                "github.event.pull_request.head.ref",
-                "github.event.workflow_run.head_sha",
-                "refs/pull/",
-            ) if p in text),
-            default=0,
-        )
-        findings.append(
-            Finding(
-                "CG-ACT-002",
-                "critical",
-                relative,
-                line_number(text, offset),
-                "A privileged or cross-workflow path checks out attacker-controlled code.",
-                "Do not check out or execute untrusted refs in privileged workflows. Pass narrowly scoped, verified data instead.",
-            )
-        )
+        offset = min((text.find(p) for p in ("github.event.pull_request.head.sha", "github.event.pull_request.head.ref", "github.event.workflow_run.head_sha", "refs/pull/") if p in text), default=0)
+        findings.append(Finding("CG-ACT-002", "critical", relative, line_number(text, offset), "A privileged or cross-workflow path checks out attacker-controlled code.", "Do not check out or execute untrusted refs in privileged workflows. Pass narrowly scoped, verified data instead."))
 
     if untrusted_events:
         for match in WRITE_PERMISSION_RE.finditer(text):
             permission = match.group(1)
-            findings.append(
-                Finding(
-                    "CG-ACT-003",
-                    "high",
-                    relative,
-                    line_number(text, match.start()),
-                    f"Untrusted event has `{permission}: write` permission.",
-                    "Move write operations to a trusted workflow, use an environment approval gate, and grant permissions only at the job that requires them.",
-                )
-            )
+            findings.append(Finding("CG-ACT-003", "high", relative, line_number(text, match.start()), f"Untrusted event has `{permission}: write` permission.", "Move write operations to a trusted workflow, use an environment approval gate, and grant permissions only at the job that requires them."))
 
     oidc_match = re.search(r"^\s*id-token:\s*write\s*$", text, re.MULTILINE)
     if untrusted_events and oidc_match is not None:
-        findings.append(
-            Finding(
-                "CG-ACT-004",
-                "critical",
-                relative,
-                line_number(text, oidc_match.start()),
-                "OIDC token minting is enabled for a workflow reachable from an untrusted event.",
-                "Issue OIDC tokens only in protected deployment jobs triggered from trusted refs and bound to a protected GitHub Environment.",
-            )
-        )
+        findings.append(Finding("CG-ACT-004", "critical", relative, line_number(text, oidc_match.start()), "OIDC token minting is enabled for a workflow reachable from an untrusted event.", "Issue OIDC tokens only in protected deployment jobs triggered from trusted refs and bound to a protected GitHub Environment."))
 
     for match in ACTION_RE.finditer(text):
         reference = match.group(1)
         if reference.startswith("./") or reference.startswith("docker://"):
             continue
         if "@" not in reference:
-            findings.append(
-                Finding(
-                    "CG-ACT-005",
-                    "critical",
-                    relative,
-                    line_number(text, match.start()),
-                    f"Action reference `{reference}` has no immutable revision.",
-                    "Pin every external action to a verified full-length commit SHA.",
-                )
-            )
+            findings.append(Finding("CG-ACT-005", "critical", relative, line_number(text, match.start()), f"Action reference `{reference}` has no immutable revision.", "Pin every external action to a verified full-length commit SHA."))
             continue
         action, ref = reference.rsplit("@", 1)
         if not FULL_SHA_RE.fullmatch(ref) and reference not in policy.get("allowed_mutable_refs", []):
-            findings.append(
-                Finding(
-                    "CG-ACT-005",
-                    "high",
-                    relative,
-                    line_number(text, match.start()),
-                    f"Action `{action}` uses mutable ref `{ref}`.",
-                    "Resolve the release tag to its verified 40-character commit SHA and retain the release tag in a comment.",
-                )
-            )
+            findings.append(Finding("CG-ACT-005", "high", relative, line_number(text, match.start()), f"Action `{action}` uses mutable ref `{ref}`.", "Resolve the release tag to its verified 40-character commit SHA and retain the release tag in a comment."))
 
     for match in RUN_BLOCK_RE.finditer(text):
         body = match.group("body")
         dangerous = DANGEROUS_EXPR_RE.search(body)
         if dangerous:
-            findings.append(
-                Finding(
-                    "CG-ACT-006",
-                    "high",
-                    relative,
-                    line_number(text, match.start()),
-                    f"Untrusted expression `{dangerous.group(0)}` is interpolated directly into a shell script.",
-                    "Assign event data to an environment variable and treat it strictly as data; never splice it into executable shell source.",
-                )
-            )
+            findings.append(Finding("CG-ACT-006", "high", relative, line_number(text, match.start()), f"Untrusted expression `{dangerous.group(0)}` is interpolated directly into a shell script.", "Assign event data to an environment variable and treat it strictly as data; never splice it into executable shell source."))
 
     lines = text.splitlines(keepends=True)
     line_offsets: list[int] = []
@@ -218,13 +142,11 @@ def scan_workflow(path: Path, policy: dict) -> list[Finding]:
     for index, line in enumerate(lines):
         if not re.match(r"^\s*(?:-\s+)?uses:\s*actions/checkout@", line):
             continue
-
         step_start = index
         while step_start >= 0 and not re.match(r"^(?P<indent>\s*)-\s+", lines[step_start]):
             step_start -= 1
         if step_start < 0:
             continue
-
         indent_match = re.match(r"^(?P<indent>\s*)-\s+", lines[step_start])
         if indent_match is None:
             continue
@@ -235,60 +157,28 @@ def scan_workflow(path: Path, policy: dict) -> list[Finding]:
             if candidate and len(candidate.group("indent")) == step_indent:
                 break
             step_end += 1
-
         block = "".join(lines[step_start:step_end])
         if "persist-credentials: false" not in block:
-            findings.append(
-                Finding(
-                    "CG-ACT-007",
-                    "medium",
-                    relative,
-                    line_number(text, line_offsets[step_start]),
-                    "`actions/checkout` leaves the workflow token available to later steps.",
-                    "Set `persist-credentials: false` unless a reviewed step must push with that token.",
-                )
-            )
+            findings.append(Finding("CG-ACT-007", "medium", relative, line_number(text, line_offsets[step_start]), "`actions/checkout` leaves the workflow token available to later steps.", "Set `persist-credentials: false` unless a reviewed step must push with that token."))
 
     if untrusted_events and re.search(r"runs-on:\s*(?:\[[^\]]*self-hosted|self-hosted)", text):
         offset = text.find("self-hosted")
-        findings.append(
-            Finding(
-                "CG-ACT-008",
-                "critical",
-                relative,
-                line_number(text, offset),
-                "An untrusted event can reach a self-hosted runner.",
-                "Do not expose persistent self-hosted runners to fork or public contribution events. Use isolated ephemeral runners with no ambient credentials.",
-            )
-        )
+        findings.append(Finding("CG-ACT-008", "critical", relative, line_number(text, offset), "An untrusted event can reach a self-hosted runner.", "Do not expose persistent self-hosted runners to fork or public contribution events. Use isolated ephemeral runners with no ambient credentials."))
 
     if "workflow_run" in events and re.search(r"actions/download-artifact@", text):
         offset = text.find("actions/download-artifact@")
-        findings.append(
-            Finding(
-                "CG-ACT-009",
-                "high",
-                relative,
-                line_number(text, offset),
-                "A privileged `workflow_run` consumes artifacts without an explicit provenance check.",
-                "Bind the artifact to the expected repository, workflow, run ID, head SHA, and triggering actor before extraction or execution.",
-            )
-        )
+        findings.append(Finding("CG-ACT-009", "high", relative, line_number(text, offset), "A privileged `workflow_run` consumes artifacts without an explicit provenance check.", "Bind the artifact to the expected repository, workflow, run ID, head SHA, and triggering actor before extraction or execution."))
 
     if re.search(r"^\s*permissions:\s*write-all\s*$", text, re.MULTILINE):
         offset = text.find("write-all")
-        findings.append(
-            Finding(
-                "CG-ACT-010",
-                "critical",
-                relative,
-                line_number(text, offset),
-                "`permissions: write-all` grants unnecessary repository-wide authority.",
-                "Declare `permissions: {}` globally and grant only the minimum permission at the specific job.",
-            )
-        )
+        findings.append(Finding("CG-ACT-010", "critical", relative, line_number(text, offset), "`permissions: write-all` grants unnecessary repository-wide authority.", "Declare `permissions: {}` globally and grant only the minimum permission at the specific job."))
 
     return findings
+
+
+def security_severity(severity: str) -> str:
+    """Return a SARIF security-severity score in the numeric range GitHub accepts."""
+    return {"critical": "9.0", "high": "8.0", "medium": "5.0", "low": "2.0"}.get(severity, "0.0")
 
 
 def sarif(findings: Iterable[Finding]) -> dict:
@@ -302,59 +192,38 @@ def sarif(findings: Iterable[Finding]) -> dict:
                 "name": finding.rule_id,
                 "shortDescription": {"text": finding.message},
                 "help": {"text": finding.remediation},
-                "properties": {"security-severity": finding.severity},
+                "properties": {"security-severity": security_severity(finding.severity)},
             },
         )
     return {
         "version": "2.1.0",
         "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
-        "runs": [
-            {
-                "tool": {
-                    "driver": {
-                        "name": "ClearGlass Artemis CI Guard",
-                        "informationUri": "https://github.com/ClearGlasslabs/Opal-Koboi",
-                        "rules": list(rules.values()),
-                    }
-                },
-                "results": [
-                    {
-                        "ruleId": finding.rule_id,
-                        "level": "error" if finding.severity in {"critical", "high"} else "warning",
-                        "message": {"text": f"{finding.message} {finding.remediation}"},
-                        "locations": [
-                            {
-                                "physicalLocation": {
-                                    "artifactLocation": {"uri": finding.path},
-                                    "region": {"startLine": finding.line},
-                                }
-                            }
-                        ],
-                    }
-                    for finding in findings
-                ],
-            }
-        ],
+        "runs": [{
+            "tool": {"driver": {
+                "name": "ClearGlass Artemis CI Guard",
+                "informationUri": "https://github.com/ClearGlasslabs/Opal-Koboi",
+                "rules": list(rules.values()),
+            }},
+            "results": [{
+                "ruleId": finding.rule_id,
+                "level": "error" if finding.severity in {"critical", "high"} else "warning",
+                "message": {"text": f"{finding.message} {finding.remediation}"},
+                "locations": [{"physicalLocation": {
+                    "artifactLocation": {"uri": finding.path},
+                    "region": {"startLine": finding.line},
+                }}],
+            } for finding in findings],
+        }],
     }
 
 
 def markdown(findings: list[Finding]) -> str:
     if not findings:
         return "## Artemis CI Guard\n\nNo supply-chain policy violations detected.\n"
-    rows = [
-        "## Artemis CI Guard",
-        "",
-        f"Detected **{len(findings)}** finding(s).",
-        "",
-        "| Severity | Rule | File | Line | Finding |",
-        "|---|---|---|---:|---|",
-    ]
+    rows = ["## Artemis CI Guard", "", f"Detected **{len(findings)}** finding(s).", "", "| Severity | Rule | File | Line | Finding |", "|---|---|---|---:|---|"]
     for finding in findings:
         message = finding.message.replace("|", "\\|")
-        rows.append(
-            f"| {finding.severity.upper()} | `{finding.rule_id}` | `{finding.path}` | "
-            f"{finding.line} | {message} |"
-        )
+        rows.append(f"| {finding.severity.upper()} | `{finding.rule_id}` | `{finding.path}` | {finding.line} | {message} |")
     rows.append("")
     return "\n".join(rows)
 
@@ -376,23 +245,12 @@ def main() -> int:
         print("No GitHub Actions workflows found.", file=sys.stderr)
         return 2
 
-    findings = [
-        finding
-        for path in workflows
-        for finding in scan_workflow(path.relative_to(root), policy)
-    ]
+    findings = [finding for path in workflows for finding in scan_workflow(path.relative_to(root), policy)]
     severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
-    findings.sort(key=lambda finding: (
-        severity_order[finding.severity], finding.path, finding.line, finding.rule_id
-    ))
+    findings.sort(key=lambda finding: (severity_order[finding.severity], finding.path, finding.line, finding.rule_id))
 
-    (root / args.json_output).write_text(
-        json.dumps([asdict(finding) for finding in findings], indent=2) + "\n",
-        encoding="utf-8",
-    )
-    (root / args.sarif_output).write_text(
-        json.dumps(sarif(findings), indent=2) + "\n", encoding="utf-8"
-    )
+    (root / args.json_output).write_text(json.dumps([asdict(finding) for finding in findings], indent=2) + "\n", encoding="utf-8")
+    (root / args.sarif_output).write_text(json.dumps(sarif(findings), indent=2) + "\n", encoding="utf-8")
     report = markdown(findings)
     if args.summary_output:
         (root / args.summary_output).write_text(report, encoding="utf-8")
