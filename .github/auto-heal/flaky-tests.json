@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "tests": [
+    {
+      "workflow": "Artemis Supply Chain Guard",
+      "job": "CI trust-boundary policy",
+      "observed_failures": 2,
+      "first_flagged_at": "2026-08-19T04:50:33.422965+00:00",
+      "status": "candidate"
+    }
+  ]
+}
