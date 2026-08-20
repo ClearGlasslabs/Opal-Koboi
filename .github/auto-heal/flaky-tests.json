@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "tests": [
+    {
+      "workflow": "Deploy Next.js site to Pages",
+      "job": "build",
+      "observed_failures": 2,
+      "first_flagged_at": "2026-08-20T04:51:47.699477+00:00",
+      "status": "candidate"
+    },
+    {
+      "workflow": "Security assurance",
+      "job": "web",
+      "observed_failures": 2,
+      "first_flagged_at": "2026-08-20T04:51:47.699483+00:00",
+      "status": "candidate"
+    }
+  ]
+}
