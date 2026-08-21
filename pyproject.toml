@@ -15,10 +15,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-openai = ["openai>=1.40,<3"]
+openai = ["openai>=1.40,<4"]
 anthropic = ["anthropic>=0.34,<1"]
 providers = [
-  "openai>=1.40,<3",
+  "openai>=1.40,<4",
   "anthropic>=0.34,<1",
 ]
 dev = [
