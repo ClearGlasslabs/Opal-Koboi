@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "handled_at": "2026-08-24T05:00:06.095755+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 32512634975,
+      "run_attempt": 1,
+      "commit_sha": "62aed7c6e664609e3c8551beb06bf5f121293806",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/32512634975",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 96867068070,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-24T05:00:08.139950+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Deploy Next.js site to Pages",
+      "run_id": 32512635069,
+      "run_attempt": 1,
+      "commit_sha": "62aed7c6e664609e3c8551beb06bf5f121293806",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/32512635069",
+      "diagnostics": [
+        {
+          "job": "build",
+          "job_id": 96867062594,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-24T05:00:10.158664+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Deploy Next.js site to Pages",
+      "run_id": 32512613923,
+      "run_attempt": 1,
+      "commit_sha": "f3174bac1efb0820fa900d529898f7965b21bde0",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/32512613923",
+      "diagnostics": [
+        {
+          "job": "build",
+          "job_id": 96866994278,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-24T05:00:11.529120+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 32512613915,
+      "run_attempt": 1,
+      "commit_sha": "f3174bac1efb0820fa900d529898f7965b21bde0",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/32512613915",
+      "diagnostics": [],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-24T05:00:14.249640+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Artemis Supply Chain Guard",
+      "run_id": 32512613959,
+      "run_attempt": 1,
+      "commit_sha": "f3174bac1efb0820fa900d529898f7965b21bde0",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/32512613959",
+      "diagnostics": [
+        {
+          "job": "Control-plane migration and tests",
+          "job_id": 96866994279,
+          "conclusion": "cancelled",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        },
+        {
+          "job": "CI trust-boundary policy",
+          "job_id": 96866996353,
+          "conclusion": "cancelled",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    }
+  ]
+}
