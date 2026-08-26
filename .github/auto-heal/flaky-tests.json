@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "tests": [
+    {
+      "workflow": "Deploy Next.js site to Pages",
+      "job": "build",
+      "observed_failures": 2,
+      "first_flagged_at": "2026-08-26T04:54:33.073457+00:00",
+      "status": "candidate"
+    }
+  ]
+}
