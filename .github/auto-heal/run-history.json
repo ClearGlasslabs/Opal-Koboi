@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "handled_at": "2026-08-29T11:04:23.730553+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 33181759489,
+      "run_attempt": 1,
+      "commit_sha": "c56095926bb5cf53c2a65556fb577be24b901d7b",
+      "branch": "dependabot/github_actions/github/codeql-action/upload-sarif-4.37.8",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/33181759489",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 98884443820,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-29T11:04:25.838645+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 33181739119,
+      "run_attempt": 1,
+      "commit_sha": "f05fe0bd4529d2739438565934c5c5ed2bf85489",
+      "branch": "dependabot/npm_and_yarn/apps/web/web-dependencies-39b25908d1",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/33181739119",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 98884374881,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-29T11:04:27.631605+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 33181722990,
+      "run_attempt": 1,
+      "commit_sha": "172468a9e4620c696d0eb3af23626fe77789d253",
+      "branch": "dependabot/pip/python-dependencies-b8f62f890d",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/33181722990",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 98884322793,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-29T11:04:29.669433+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 33181701237,
+      "run_attempt": 1,
+      "commit_sha": "f40a894f4d20ccbc8c8c7029e87ed89f21cbc4a8",
+      "branch": "dependabot/pip/apps/api/api-dependencies-2654382d2e",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/33181701237",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 98884244868,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-08-29T11:04:31.586351+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 32512634975,
+      "run_attempt": 1,
+      "commit_sha": "62aed7c6e664609e3c8551beb06bf5f121293806",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/32512634975",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 96867068070,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    }
+  ]
+}
