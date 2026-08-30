@@ -1,5 +1,6 @@
 name: Deploy GitHub Pages site
 
+# Rebuild trigger: keep the validated static Pages deployment available for the active project.
 on:
   push:
     branches: [main]
@@ -21,7 +22,6 @@ permissions: {}
 
 concurrency:
   group: pages
-  # Do not interrupt a production deployment midway through a release.
   cancel-in-progress: false
 
 jobs:
