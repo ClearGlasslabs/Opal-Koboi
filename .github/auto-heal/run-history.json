@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "handled_at": "2026-09-03T08:55:17.490534+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 33534708399,
+      "run_attempt": 1,
+      "commit_sha": "b958967ae38bc6958f9c3fc76ae06abdbd4cf0a2",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 157,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/33534708399",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 99946070658,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-03T08:55:19.155747+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Deploy Next.js site to Pages",
+      "run_id": 33534708413,
+      "run_attempt": 1,
+      "commit_sha": "b958967ae38bc6958f9c3fc76ae06abdbd4cf0a2",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/33534708413",
+      "diagnostics": [
+        {
+          "job": "build",
+          "job_id": 99946070653,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-03T08:55:20.830405+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 33534517711,
+      "run_attempt": 2,
+      "commit_sha": "643c7746fdf6bcbccae44739acd831eb1b417026",
+      "branch": "copilot/fix-77194670-1243842240-394e0bb9-aae6-4125-aadd-7138305d2c95",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/33534517711",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 99945959246,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-03T08:55:22.297063+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Running Copilot cloud agent",
+      "run_id": 33534515037,
+      "run_attempt": 1,
+      "commit_sha": "643c7746fdf6bcbccae44739acd831eb1b417026",
+      "branch": "copilot/fix-77194670-1243842240-394e0bb9-aae6-4125-aadd-7138305d2c95",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/33534515037",
+      "diagnostics": [
+        {
+          "job": "copilot",
+          "job_id": 99945418190,
+          "conclusion": "cancelled",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-03T08:55:23.726553+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Deploy Next.js site to Pages",
+      "run_id": 33322941230,
+      "run_attempt": 1,
+      "commit_sha": "1101e1c79c880b46a273c53af7ea4af071dd0680",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/33322941230",
+      "diagnostics": [
+        {
+          "job": "build",
+          "job_id": 99287990094,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    }
+  ]
+}
