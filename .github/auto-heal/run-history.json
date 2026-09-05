@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "handled_at": "2026-09-05T08:20:33.309688+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 33885597521,
+      "run_attempt": 1,
+      "commit_sha": "e77cf40eda0afcbee3bb0ea46c7b9b788183fd7c",
+      "branch": "dependabot/github_actions/Azure/login-3.0.2",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 162,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/33885597521",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 101064457057,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-05T08:20:35.066451+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 33885561537,
+      "run_attempt": 1,
+      "commit_sha": "a614c5db6e1444bde1fe97af1349bb89372e8f34",
+      "branch": "dependabot/github_actions/github/codeql-action/upload-sarif-4.37.9",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 163,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/33885561537",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 101064337645,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-05T08:20:36.752956+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 33885540806,
+      "run_attempt": 1,
+      "commit_sha": "5f9beca0258b4ca8064f222943a6d6e98063ac5a",
+      "branch": "dependabot/npm_and_yarn/apps/web/web-dependencies-7e1b5d8ca8",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 164,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/33885540806",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 101064271109,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-05T08:20:38.446695+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 33885504948,
+      "run_attempt": 1,
+      "commit_sha": "f919a21257982ed21458d17b55553778aad1b7fb",
+      "branch": "dependabot/pip/apps/api/api-dependencies-a1f8cd5f30",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 165,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/33885504948",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 101064155062,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-05T08:20:39.725333+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 33534708399,
+      "run_attempt": 1,
+      "commit_sha": "b958967ae38bc6958f9c3fc76ae06abdbd4cf0a2",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/33534708399",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 99946070658,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    }
+  ]
+}
