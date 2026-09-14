@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "handled_at": "2026-09-14T09:50:23.069138+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 34611942024,
+      "run_attempt": 1,
+      "commit_sha": "e62906846072c195f395e59bd99bc6b3436bead9",
+      "branch": "dependabot/pip/apps/api/api-dependencies-4218d24654",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/34611942024",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 103304336454,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-14T09:50:25.209435+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 34611930260,
+      "run_attempt": 1,
+      "commit_sha": "06ff910df02ae7edd91021f2a0d0d1d95b0e03b6",
+      "branch": "dependabot/npm_and_yarn/apps/web/web-dependencies-d2c0893f70",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/34611930260",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 103304295066,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-14T09:50:27.680939+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Deploy Next.js site to Pages",
+      "run_id": 34049452642,
+      "run_attempt": 1,
+      "commit_sha": "1855f58b8494906978d0be8f237247f7521d1504",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/34049452642",
+      "diagnostics": [
+        {
+          "job": "build",
+          "job_id": 101530292596,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-14T09:50:29.648950+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 34049452694,
+      "run_attempt": 1,
+      "commit_sha": "1855f58b8494906978d0be8f237247f7521d1504",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/34049452694",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 101530315156,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-14T09:50:32.022400+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Deploy Next.js site to Pages",
+      "run_id": 34049435337,
+      "run_attempt": 1,
+      "commit_sha": "df653e2d8da74025d0dd7193c4a661f14706729a",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/34049435337",
+      "diagnostics": [
+        {
+          "job": "build",
+          "job_id": 101530246844,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    }
+  ]
+}
