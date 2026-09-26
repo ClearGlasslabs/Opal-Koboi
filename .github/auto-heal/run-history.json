@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "handled_at": "2026-09-26T09:20:19.449633+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 36149650213,
+      "run_attempt": 1,
+      "commit_sha": "9981eb48c9ed98f85c6761a4b4c0d08a3db99661",
+      "branch": "dependabot/github_actions/github/codeql-action/upload-sarif-4.38.1",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 185,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/36149650213",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 108119390043,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-26T09:20:21.184857+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 36149637351,
+      "run_attempt": 1,
+      "commit_sha": "ff6fb2ef7082a9814b798c8ab2e7b95a24d9f9ba",
+      "branch": "dependabot/pip/apps/api/api-dependencies-dcc08261a9",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 186,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/36149637351",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 108119346163,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-26T09:20:22.672333+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 35358691375,
+      "run_attempt": 1,
+      "commit_sha": "1e81d88fe818ebf4a371892f90d9629772daf37c",
+      "branch": "dependabot/npm_and_yarn/apps/web/web-dependencies-b5a87fc975",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/35358691375",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 105644281244,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-26T09:20:24.072101+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 35358665183,
+      "run_attempt": 1,
+      "commit_sha": "7da3aab881fd50d499997773af22a0b999d5c9b5",
+      "branch": "dependabot/github_actions/github/codeql-action/upload-sarif-4.38.0",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/35358665183",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 105644192163,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-09-26T09:20:25.424209+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 35358630328,
+      "run_attempt": 1,
+      "commit_sha": "21e5c59b6ab22cb6a520a82945fd15221becb4d6",
+      "branch": "dependabot/pip/apps/api/api-dependencies-4d4fa57352",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_existing_issue",
+      "issue_number": null,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/35358630328",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 105644078174,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    }
+  ]
+}
