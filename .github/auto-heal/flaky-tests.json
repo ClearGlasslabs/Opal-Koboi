@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tests": [
+    {
+      "workflow": "Deploy Next.js site to Pages",
+      "job": "build",
+      "observed_failures": 2,
+      "first_flagged_at": "2026-10-05T11:26:38.652579+00:00",
+      "status": "candidate"
+    },
+    {
+      "workflow": "Security assurance",
+      "job": "web",
+      "observed_failures": 3,
+      "first_flagged_at": "2026-10-05T11:26:38.652586+00:00",
+      "status": "candidate"
+    },
+    {
+      "workflow": "Security assurance",
+      "job": "sast-secrets-dependencies",
+      "observed_failures": 2,
+      "first_flagged_at": "2026-10-05T11:26:38.652590+00:00",
+      "status": "candidate"
+    }
+  ]
+}
