@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "handled_at": "2026-10-16T09:00:08.358635+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Deploy Next.js site to Pages",
+      "run_id": 38760855104,
+      "run_attempt": 1,
+      "commit_sha": "185885b5c699344b815deaef6e9a2ae0bf2d2f88",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 203,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/38760855104",
+      "diagnostics": [
+        {
+          "job": "build",
+          "job_id": 116511439718,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-10-16T09:00:11.494839+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 38760854853,
+      "run_attempt": 1,
+      "commit_sha": "185885b5c699344b815deaef6e9a2ae0bf2d2f88",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 204,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/38760854853",
+      "diagnostics": [
+        {
+          "job": "web",
+          "job_id": 116511592868,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-10-16T09:00:14.463849+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Deploy Next.js site to Pages",
+      "run_id": 38760809385,
+      "run_attempt": 1,
+      "commit_sha": "705a62e3a1f2e7bad8d8e8d352dfff254cb645ad",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 205,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/38760809385",
+      "diagnostics": [
+        {
+          "job": "build",
+          "job_id": 116511276136,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-10-16T09:00:18.419878+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Security assurance",
+      "run_id": 38760809331,
+      "run_attempt": 1,
+      "commit_sha": "705a62e3a1f2e7bad8d8e8d352dfff254cb645ad",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 206,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/38760809331",
+      "diagnostics": [
+        {
+          "job": "sast-secrets-dependencies",
+          "job_id": 116511364765,
+          "conclusion": "cancelled",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        },
+        {
+          "job": "web",
+          "job_id": 116511364998,
+          "conclusion": "cancelled",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    },
+    {
+      "handled_at": "2026-10-16T09:00:22.744848+00:00",
+      "repo": "ClearGlasslabs/Opal-Koboi",
+      "workflow": "Deploy Next.js site to Pages",
+      "run_id": 38760761551,
+      "run_attempt": 1,
+      "commit_sha": "c0a1426f21472ff4fec6d0207b7278f453cf5de8",
+      "branch": "main",
+      "classification": "UNKNOWN_FAILURE",
+      "action": "escalated_issue",
+      "issue_number": 207,
+      "run_url": "https://github.com/ClearGlasslabs/Opal-Koboi/actions/runs/38760761551",
+      "diagnostics": [
+        {
+          "job": "build",
+          "job_id": 116511106779,
+          "conclusion": "failure",
+          "category": "UNKNOWN_FAILURE",
+          "signature": "unknown failure"
+        }
+      ],
+      "outcome": "pending_review"
+    }
+  ]
+}
