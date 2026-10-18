@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "tests": [
+    {
+      "workflow": "Security assurance",
+      "job": "web",
+      "observed_failures": 4,
+      "first_flagged_at": "2026-10-18T08:50:12.156126+00:00",
+      "status": "candidate"
+    }
+  ]
+}
