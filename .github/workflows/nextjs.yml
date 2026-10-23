@@ -44,7 +44,7 @@ jobs:
             exit 1
           fi
       - name: Setup Node
-        uses: actions/setup-node@ae0d4ed08881f17d1511386f5be3e62356acd4a6 # current upstream commit
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # current upstream commit
         with:
           node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
